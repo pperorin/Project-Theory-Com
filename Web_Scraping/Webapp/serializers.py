@@ -4,9 +4,9 @@ from Webapp.models import Mouse,Keyboard
 class MouseSerializer(serializers.ModelSerializer):
     class Meta:
         model=Mouse
-        fields=('MouseId','MouseName')
+        fields=('MouseId','Name')
 
 class KeyboardSerializer(serializers.ModelSerializer):
     class Meta:
         model=Keyboard
-        fields=('KeyboardId','KeyboardName')
+        fields=('KeyboardId','Name')
