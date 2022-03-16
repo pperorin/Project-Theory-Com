@@ -16,6 +16,11 @@ Web Scarping
 ```bash
   pip install dnspython
 ```
+<br>
+Docs Django with mongodb
+```bash
+  https://art-of-engineer.blogspot.com/2021/06/python-django-mongodb-crud-api-tutorial.html
+```
 
 
 
