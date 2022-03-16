@@ -19,9 +19,7 @@ Web Scarping
 <br>
 Docs Django with mongodb
 <br>
-```bash
-  https://art-of-engineer.blogspot.com/2021/06/python-django-mongodb-crud-api-tutorial.html
-```
+https://art-of-engineer.blogspot.com/2021/06/python-django-mongodb-crud-api-tutorial.html
 
 
 
