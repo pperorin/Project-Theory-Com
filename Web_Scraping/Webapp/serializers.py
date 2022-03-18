@@ -14,4 +14,4 @@ class KeyboardSerializer(serializers.ModelSerializer):
 class HeadGearSerializer(serializers.ModelSerializer):
     class Meta:
         model=HeadGear
-        field=('HeadGearId','Name','Brand','PictureLink','Detail','Banana','PowerB','Jib')
+        fields=('HeadGearId','Name','Brand','PictureLink','Detail','Banana','PowerB','Jib')
