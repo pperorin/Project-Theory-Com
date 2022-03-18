@@ -4,14 +4,14 @@ from Webapp.models import Mouse,Keyboard,HeadGear
 class MouseSerializer(serializers.ModelSerializer):
     class Meta:
         model=Mouse
-        fields=('MouseId','Name','Brand','PictureLink','Banana','PowerB','Jib')
+        fields=('MouseId','Name','Brand','PictureLink','Detail','Banana','PowerB','Jib')
 
 class KeyboardSerializer(serializers.ModelSerializer):
     class Meta:
         model=Keyboard
-        fields=('KeyboardId','Name','Brand','PictureLink','Banana','PowerB','Jib')
+        fields=('KeyboardId','Name','Brand','PictureLink','Detail','Banana','PowerB','Jib')
 
 class HeadGearSerializer(serializers.ModelSerializer):
     class Meta:
         model=HeadGear
-        field=('HeadGearId','Name','Brand','PictureLink','Banana','PowerB','Jib')
+        field=('HeadGearId','Name','Brand','PictureLink','Detail','Banana','PowerB','Jib')
