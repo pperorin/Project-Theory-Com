@@ -1,12 +1,17 @@
 from rest_framework import serializers
-from Webapp.models import Mouse,Keyboard
+from Webapp.models import Mouse,Keyboard,HeadGear
 
 class MouseSerializer(serializers.ModelSerializer):
     class Meta:
         model=Mouse
-        fields=('MouseId','Name')
+        fields=('MouseId','Name','Brand','PictureLink','Banana','PowerB','Jib')
 
 class KeyboardSerializer(serializers.ModelSerializer):
     class Meta:
         model=Keyboard
-        fields=('KeyboardId','Name')
+        fields=('KeyboardId','Name','Brand','PictureLink','Banana','PowerB','Jib')
+
+class HeadGearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=HeadGear
+        field=('HeadGearId','Name','Brand','PictureLink','Banana','PowerB','Jib')
