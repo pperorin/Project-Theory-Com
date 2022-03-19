@@ -30,7 +30,7 @@ def mouseApi(request,id=0):
         return JsonResponse("Failed to Add",safe=False)
     elif request.method=='PUT':
         mouse_data=JSONParser().parse(request)
-        mouse=Mouse.objects.get(MouseId=mouse_data['MouseId'])
+        mouse=Mouse.objects.get(MouseId=id)
         mouse_serializer=MouseSerializer(mouse,data=mouse_data)
         if mouse_serializer.is_valid():
             mouse_serializer.save()
@@ -44,9 +44,14 @@ def mouseApi(request,id=0):
 @csrf_exempt
 def keyboardApi(request,id=0):
     if request.method=='GET':
-        keyboard = Keyboard.objects.all()
-        keyboard_serializer=KeyboardSerializer(keyboard,many=True)
-        return JsonResponse(keyboard_serializer.data,safe=False)
+        if id == 0:
+            keyboard = Keyboard.objects.all()
+            keyboard_serializer=KeyboardSerializer(keyboard,many=True)
+            return JsonResponse(keyboard_serializer.data,safe=False)
+        else:
+            keyboard = Keyboard.objects.get(KeyboardId=id)
+            keyboard_serializer = KeyboardSerializer(keyboard)
+            return JsonResponse(keyboard_serializer.data,safe=False)
     elif request.method=='POST':
         keyboard_data=JSONParser().parse(request)
         keyboard_serializer=KeyboardSerializer(data=keyboard_data)
@@ -56,7 +61,7 @@ def keyboardApi(request,id=0):
         return JsonResponse("Failed to Add",safe=False)
     elif request.method=='PUT':
         keyboard_data=JSONParser().parse(request)
-        keyboard=Keyboard.objects.get(KeyboardId=keyboard_data['KeyboardId'])
+        keyboard=Keyboard.objects.get(KeyboardId=id)
         keyboard_serializer=KeyboardSerializer(keyboard,data=keyboard_data)
         if keyboard_serializer.is_valid():
             keyboard_serializer.save()
