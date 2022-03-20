@@ -1,8 +1,9 @@
+from re import I
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
-
+import requests
 from Webapp.models import Mouse,Keyboard,HeadGear
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
 
@@ -108,3 +109,18 @@ def SaveFile(request):
     file=request.FILES['file']
     file_name=default_storage.save(file.name,file)
     return JsonResponse(file_name,safe=False)
+
+@csrf_exempt
+def catchTest(dataT):
+    i = 0
+    api = "http://127.0.0.1:8000/mouse"
+    while i < len(dataT):
+        if requests.post(api, json=dataT[i]):
+            i += 1
+        else:
+            break
+    if i == len(dataT):
+        return True
+    else:
+        return False
+    
