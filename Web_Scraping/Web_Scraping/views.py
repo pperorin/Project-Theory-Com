@@ -66,7 +66,7 @@ def Banana(device):
         url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?in_stock=true&page="
     
     # find the number of pages
-    res = requests.get(url[input] + "1")
+    res = requests.get(url + "1")
     res.encoding = "utf-8"
     soup = BeautifulSoup(res.text, 'html.parser')
     page = soup.find_all("button", {"class": "vmq-pagination-link"})
@@ -75,7 +75,7 @@ def Banana(device):
 
     datas = []
     for numPage in range(1, numberOfPage+1):
-        res = requests.get(url[input]+str(numPage))
+        res = requests.get(url+str(numPage))
     # res = requests.get(url[input]+str(1))
     res.encoding = "utf-8"
     soup = BeautifulSoup(res.text, 'html.parser')
