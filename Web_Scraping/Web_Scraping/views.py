@@ -113,3 +113,51 @@ def Banana(device):
         datas.append(obj)
         # print(obj)
     return datas
+
+def ihavecpu(device):
+    def getDescription(link):
+        res = requests.get(link)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    location = soup.find("tr", {"class": "descTR"})
+    description = location.find("td", {"class": "bodyTD"})
+    return description.text
+
+    if(device == "mouse"):
+        url = "https://www.ihavecpu.com/category/251/gaming-gear-%E0%B8%AD%E0%B8%B8%E0%B8%9B%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%A5%E0%B9%88%E0%B8%99%E0%B9%80%E0%B8%81%E0%B8%A1/mouse-%E0%B9%80%E0%B8%A1%E0%B8%B2%E0%B8%AA%E0%B9%8C?tskp="
+    elif(device == "keyboard"):
+        url = "https://www.ihavecpu.com/category/250/gaming-gear-%E0%B8%AD%E0%B8%B8%E0%B8%9B%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%A5%E0%B9%88%E0%B8%99%E0%B9%80%E0%B8%81%E0%B8%A1/keyboard-%E0%B8%84%E0%B8%B5%E0%B8%A2%E0%B9%8C%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%94?tskp="
+    elif(device == "headphone"):
+        url = "https://www.ihavecpu.com/category/249/gaming-gear-%E0%B8%AD%E0%B8%B8%E0%B8%9B%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B9%8C%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%A5%E0%B9%88%E0%B8%99%E0%B9%80%E0%B8%81%E0%B8%A1/gaming-headset-%E0%B8%AB%E0%B8%B9%E0%B8%9F%E0%B8%B1%E0%B8%87?tskp="
+
+    res = requests.get(url)
+    res.encoding = "utf-8"
+    soup = BeautifulSoup(res.text, 'html.parser')
+    page = soup.find_all("div", {"class": "numberBox"})
+    numberOfPage = int(page[-1].text)
+
+    datas=[]
+
+    for numPage in range(numberOfPage + 1):
+        res = requests.get(url+str(numPage))
+        soup = BeautifulSoup(res.text, 'html.parser')
+
+        allDevice = soup.find(
+            "div", {"class": "productsArea tsk-dataview thumbnailArea size-250r frame-000"})
+        device = allDevice.find_all("div", {"class": "productArea productItem"})
+        for i in range(len(device)):
+            detail = device[i].find("a", {"class": "gadgetThumbnail"}).get("gaeepd"),
+            link = device[i].find("a", {"class": "gadgetThumbnail"}).get("href"),
+            price = device[i].find("div", {"class": "product_price has_currency_unit"}).text,
+            detail = detail[0]
+            fullname = re.findall("\"name\":\".*\",\"price\"", detail)[0][8:-9].split(" ")
+            name=""
+            for i in range(2,len(fullname)):
+                name += fullname[i] + " "
+            obj={
+                "name":name[:-2],
+                "brand":fullname[1],
+                "ihavecpu":price[0][:-7],
+                "description":getDescription(link[0]),
+            }
+            datas.append(obj)
+    return datas
