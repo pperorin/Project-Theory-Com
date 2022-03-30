@@ -10,8 +10,8 @@ class Mouse(models.Model):
     PictureLink = models.CharField(max_length=500,blank=True)
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
-    PowerB = models.CharField(max_length=500,default="None")
-    Jib = models.CharField(max_length=500,default="None")
+    Ihavecpu = models.CharField(max_length=500,default="None")
+    Advice = models.CharField(max_length=500,default="None")
 
 class Keyboard(models.Model):
     KeyboardId = models.AutoField(primary_key=True)
@@ -20,8 +20,8 @@ class Keyboard(models.Model):
     PictureLink = models.CharField(max_length=500,blank=True)
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
-    PowerB = models.CharField(max_length=500,default="None")
-    Jib = models.CharField(max_length=500,default="None")
+    Ihavecpu = models.CharField(max_length=500,default="None")
+    Advice = models.CharField(max_length=500,default="None")
 
 class HeadGear(models.Model):
     HeadGearId = models.AutoField(primary_key=True)
@@ -30,5 +30,5 @@ class HeadGear(models.Model):
     PictureLink = models.CharField(max_length=500,blank=True)
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
-    PowerB = models.CharField(max_length=500,default="None")
-    Jib = models.CharField(max_length=500,default="None")
+    Ihavecpu = models.CharField(max_length=500,default="None")
+    Advice = models.CharField(max_length=500,default="None")
