@@ -86,6 +86,15 @@ def keyboardApi(request,id=0):
         return JsonResponse("Deleted Successfully",safe=False)
 
 @csrf_exempt
+def keyAdd(obj):
+    keyboard_data = obj
+    keyboard_serializer=KeyboardSerializer(data=keyboard_data)
+    if keyboard_serializer.is_valid():
+        keyboard_serializer.save()
+        return True
+    return False
+
+@csrf_exempt
 def headGearApi(request, id=0):
     if request.method=='GET':
         if id == 0:
@@ -139,19 +148,17 @@ def catchTest(dataT):
 
 @csrf_exempt
 def hiBanana(request):
-    lis = webScrap.Banana("mouse")
-    i = 0
-    for i in range(5):
+    lis = webScrap.Banana("keyboard")
+    for i in lis:
         dat = {
-            "Name": lis[i]["name"],
-            "Brand": lis[i]["brand"],
-            "PictureLink": lis[i]["link"],
-            "Detail": lis[i]["description"],
-            "Banana": "1",
+            "Name": i["name"],
+            "Brand": i["brand"],
+            "PictureLink": i["img_url"],
+            "Detail": i["description"],
+            "Banana": i["bananaPrice"],
             "Ihavecpu": "0"
         }
-        print(dat)
-        if mouseAdd(dat) == False:
+        if keyAdd(dat) == False:
             return JsonResponse("Failed to Upload",safe=False)
     return JsonResponse("All done",safe=False)
 
@@ -167,7 +174,6 @@ def hiIHCPU(request):
             "Banana": "0",
             "Ihavecpu": i["price"]
         }
-        j = json.dumps(dat)
         if mouseAdd(dat) == False:
             return JsonResponse("Failed",safe=False)
     return JsonResponse("All done",safe=False)

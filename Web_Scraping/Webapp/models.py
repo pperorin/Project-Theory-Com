@@ -17,7 +17,7 @@ class Keyboard(models.Model):
     Name = models.CharField(max_length=500)
     Brand = models.CharField(max_length=500,blank=True)
     PictureLink = models.CharField(max_length=500,blank=True)
-    Detail = models.CharField(max_length=500,default="ไม่มีข้อมูล")
+    Detail = models.CharField(max_length=20000,default="ไม่มีข้อมูล")
     Banana = models.CharField(max_length=500,default="0")
     Ihavecpu = models.CharField(max_length=500,default="0")
 
