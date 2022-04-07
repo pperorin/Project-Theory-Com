@@ -35,6 +35,8 @@ def throwTest(request):
         return JsonResponse("Failed to Added", safe=False)
 
 # use like Banana("mouse") , Banana("keyboard") , Banana("headphone")
+
+
 def Banana(device):
     def getDescription(link):
         res = requests.get(link)
@@ -68,7 +70,7 @@ def Banana(device):
     elif(device == "headphone"):
         url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?in_stock=true&page="
         # url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?page="
-    
+
     # find the number of pages
     res = requests.get(url + "1")
     res.encoding = "utf-8"
@@ -93,7 +95,7 @@ def Banana(device):
         img_url = soup.find_all("img", {"class": "image"})
 
         for i in range(len(name)):
-            # # use regular expression for get just name model 
+            # # use regular expression for get just name model
             # model = re.findall("Mouse .*", name[i].string[1:-1])
             # if(len(model) > 0):
             #     model = model[0][6:]
@@ -118,6 +120,7 @@ def Banana(device):
             # print(obj)
     return datas
 
+
 def ihavecpu(device):
     def getDescription(link):
         res = requests.get(link)
@@ -139,10 +142,10 @@ def ihavecpu(device):
     page = soup.find_all("div", {"class": "numberBox"})
     if page == []:
         numberOfPage = 1
-    else :
+    else:
         numberOfPage = int(page[-1].text)
 
-    datas=[]
+    datas = []
 
     for numPage in range(numberOfPage + 1):
         res = requests.get(url+str(numPage))
@@ -150,21 +153,26 @@ def ihavecpu(device):
 
         allDevice = soup.find(
             "div", {"class": "productsArea tsk-dataview thumbnailArea size-250r frame-000"})
-        device = allDevice.find_all("div", {"class": "productArea productItem"})
+        device = allDevice.find_all(
+            "div", {"class": "productArea productItem"})
         for i in range(len(device)):
-            detail = device[i].find("a", {"class": "gadgetThumbnail"}).get("gaeepd"),
-            link = device[i].find("a", {"class": "gadgetThumbnail"}).get("href"),
-            price = device[i].find("div", {"class": "product_price has_currency_unit"}).text,
-            detail = detail[0]
-            fullname = re.findall("\"name\":\".*\",\"price\"", detail)[0][8:-9].split(" ")
-            name=""
-            for i in range(2,len(fullname)):
-                name += fullname[i] + " "
-            obj={
-                "name":name[:-2],
-                "brand":fullname[1],
-                "ihavecpu":price[0][:-7],
-                "description":getDescription(link[0]),
+            name = device[i].find("a", {"class": "gadgetThumbnail"}).get(
+                "title").split(" ")
+            brand = name[1]
+            realname = ""
+            for i in range(2, len(name)):
+                realname += name[i] + " "
+            link = device[i].find(
+                "a", {"class": "gadgetThumbnail"}).get("href")
+            price = device[i].find(
+                "div", {"class": "product_price has_currency_unit"}).text
+            image_url = device[i].find("img").get("data-src")
+            obj = {
+                "name": realname,
+                "brand": brand,
+                "price": price[:-7],
+                "img_url": image_url,
+                "description": getDescription(link)
             }
             datas.append(obj)
     return datas
