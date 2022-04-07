@@ -16,6 +16,12 @@ Web Scarping
 ```bash
   pip install dnspython
 ```
+```bash
+  pip install requests
+```
+```bash
+  pip install beautifulsoup4
+```
 <br>
 Docs Django with mongodb
 <br>
