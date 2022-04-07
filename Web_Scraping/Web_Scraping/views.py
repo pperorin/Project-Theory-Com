@@ -100,7 +100,7 @@ def Banana(device):
             #     # model = model[0][len(brand[i].string[1:-1])+1:]
             # print(model)
             obj = {
-                "name": name[i].string[1:-1],
+                "name": name[i].text[1:-1],
                 "brand": brand[i].string[1:-1],
                 "link": "https://www.bnn.in.th"+link[i].get("href"),
                 # "productInfo": productInfo[i].string[1:-1],
@@ -134,7 +134,10 @@ def ihavecpu(device):
     res.encoding = "utf-8"
     soup = BeautifulSoup(res.text, 'html.parser')
     page = soup.find_all("div", {"class": "numberBox"})
-    numberOfPage = int(page[-1].text)
+    if page == []:
+        numberOfPage = 1
+    else :
+        numberOfPage = int(page[-1].text)
 
     datas=[]
 
