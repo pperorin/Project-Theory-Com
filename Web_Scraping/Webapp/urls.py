@@ -9,7 +9,11 @@ urlpatterns=[
     url(r'^keyboard/(?P<id>[0-9]+)$',views.keyboardApi),
     
     url(r'^headgear$', views.headGearApi),
-    url(r'^headgear/(?P<id>[0-9]+)$', views.headGearApi)
+    url(r'^headgear/(?P<id>[0-9]+)$', views.headGearApi),
+
+    url(r'^banana$', views.hiBanana),
+
+    url(r'^ihaveCPU$', views.hiIHCPU)
 ]
 
 

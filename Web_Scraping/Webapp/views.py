@@ -6,6 +6,7 @@ from django.http.response import JsonResponse
 import requests
 from Webapp.models import Mouse,Keyboard,HeadGear
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
+from Web_Scraping import views as webScrap
 
 from django.core.files.storage import default_storage
 
@@ -123,4 +124,16 @@ def catchTest(dataT):
         return True
     else:
         return False
+
+
+@csrf_exempt
+def hiBanana(request):
+    lis = webScrap.Banana("mouse")
+    return JsonResponse(lis,safe=False)
+
+@csrf_exempt
+def hiIHCPU(request):
+    lis = webScrap.ihavecpu("mouse")
+    return JsonResponse(lis,safe=False)
+
     
