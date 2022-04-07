@@ -61,10 +61,13 @@ def Banana(device):
 
     if device == "mouse":
         url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/mouse-1?in_stock=true&page="
+        # url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/mouse-1?page="
     elif(device == "keyboard"):
         url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/keyboard-and-numpad?in_stock=true&page="
+        # url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/keyboard-and-numpad?page="
     elif(device == "headphone"):
         url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?in_stock=true&page="
+        # url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?page="
     
     # find the number of pages
     res = requests.get(url + "1")
