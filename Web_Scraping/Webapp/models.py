@@ -11,7 +11,6 @@ class Mouse(models.Model):
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
     Ihavecpu = models.CharField(max_length=500,default="None")
-    Advice = models.CharField(max_length=500,default="None")
 
 class Keyboard(models.Model):
     KeyboardId = models.AutoField(primary_key=True)
@@ -21,7 +20,6 @@ class Keyboard(models.Model):
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
     Ihavecpu = models.CharField(max_length=500,default="None")
-    Advice = models.CharField(max_length=500,default="None")
 
 class HeadGear(models.Model):
     HeadGearId = models.AutoField(primary_key=True)
@@ -31,4 +29,3 @@ class HeadGear(models.Model):
     Detail = models.CharField(max_length=500,default="None")
     Banana = models.CharField(max_length=500,default="None")
     Ihavecpu = models.CharField(max_length=500,default="None")
-    Advice = models.CharField(max_length=500,default="None")

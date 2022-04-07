@@ -43,6 +43,15 @@ def mouseApi(request,id=0):
         mouse.delete()
         return JsonResponse("Deleted Successfully",safe=False)
 
+def mouseAdd(obj):
+    mouse_data = JSONParser().parse(obj)
+    mouse_serializer = MouseSerializer(data = mouse_data)
+    if mouse_serializer.is_valid():
+        mouse_serializer.save()
+        return True
+    return False
+
+
 @csrf_exempt
 def keyboardApi(request,id=0):
     if request.method=='GET':
@@ -129,11 +138,37 @@ def catchTest(dataT):
 @csrf_exempt
 def hiBanana(request):
     lis = webScrap.Banana("mouse")
-    return JsonResponse(lis,safe=False)
+    i = 0
+    for i in range(5):
+        dat = {
+            "Name": lis[i]["name"],
+            "Brand": lis[i]["brand"],
+            "PictureLink": lis[i]["link"],
+            "Detail": lis[i]["description"],
+            "Banana": "1",
+            "Ihavecpu": "0"
+        }
+        print(dat)
+        if mouseAdd(dat) == False:
+            return JsonResponse("Failed to Upload",safe=False)
+    return JsonResponse("All done",safe=False)
 
 @csrf_exempt
 def hiIHCPU(request):
     lis = webScrap.ihavecpu("mouse")
-    return JsonResponse(lis,safe=False)
+    i = 0
+    for i in range(5):
+        dat = {
+            "Name": lis[i]["name"],
+            "Brand": lis[i]["brand"],
+            "PictureLink": lis[i]["link"],
+            "Detail": lis[i]["description"],
+            "Banana": "0",
+            "Ihavecpu": "1"
+        }
+        print(dat)
+        if mouseAdd(dat) == False:
+            return JsonResponse("Failed to Upload",safe=False)
+    return JsonResponse("All done",safe=False)
 
     
