@@ -46,9 +46,9 @@ def mouseApi(request,id=0):
 
 @csrf_exempt
 def mouseAdd(obj):
-    mouse_data = JSONParser().parse(obj)
+    mouse_data= obj
     print(mouse_data)
-    mouse_serializer = MouseSerializer(data = mouse_data)
+    mouse_serializer = MouseSerializer(data=mouse_data)
     if mouse_serializer.is_valid():
         mouse_serializer.save()
         return True
@@ -161,15 +161,15 @@ def hiIHCPU(request):
     lis = webScrap.ihavecpu("mouse")
     for i in lis:
         dat = {
-            "Name": lis[i]["name"],
-            "Brand": lis[i]["brand"],
-            "PictureLink": lis[i]["img_url"],
-            "Detail": lis[i]["description"],
+            "Name": i["name"],
+            "Brand": i["brand"],
+            "PictureLink": i["img_url"],
+            "Detail": i["description"],
             "Banana": "0",
-            "Ihavecpu": lis[i]["price"]
+            "Ihavecpu": i["price"]
         }
         j = json.dumps(dat,ensure_ascii=False).encode('utf8')
-        if mouseAdd(j) == False:
+        if mouseAdd(j.decode()) == False:
             return JsonResponse("Failed",safe=False)
     return JsonResponse("All done",safe=False)
 
