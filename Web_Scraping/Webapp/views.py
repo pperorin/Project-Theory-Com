@@ -7,6 +7,7 @@ import requests
 from Webapp.models import Mouse,Keyboard,HeadGear
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
 from Web_Scraping import views as webScrap
+import json
 
 from django.core.files.storage import default_storage
 
@@ -43,8 +44,10 @@ def mouseApi(request,id=0):
         mouse.delete()
         return JsonResponse("Deleted Successfully",safe=False)
 
+@csrf_exempt
 def mouseAdd(obj):
     mouse_data = JSONParser().parse(obj)
+    print(mouse_data)
     mouse_serializer = MouseSerializer(data = mouse_data)
     if mouse_serializer.is_valid():
         mouse_serializer.save()
@@ -156,19 +159,18 @@ def hiBanana(request):
 @csrf_exempt
 def hiIHCPU(request):
     lis = webScrap.ihavecpu("mouse")
-    i = 0
-    for i in range(5):
+    for i in lis:
         dat = {
             "Name": lis[i]["name"],
             "Brand": lis[i]["brand"],
-            "PictureLink": lis[i]["link"],
+            "PictureLink": lis[i]["img_url"],
             "Detail": lis[i]["description"],
             "Banana": "0",
-            "Ihavecpu": "1"
+            "Ihavecpu": lis[i]["price"]
         }
-        print(dat)
-        if mouseAdd(dat) == False:
-            return JsonResponse("Failed to Upload",safe=False)
+        j = json.dumps(dat,ensure_ascii=False).encode('utf8')
+        if mouseAdd(j) == False:
+            return JsonResponse("Failed",safe=False)
     return JsonResponse("All done",safe=False)
 
     
