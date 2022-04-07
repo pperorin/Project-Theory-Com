@@ -46,8 +46,7 @@ def mouseApi(request,id=0):
 
 @csrf_exempt
 def mouseAdd(obj):
-    mouse_data= obj
-    print(mouse_data)
+    mouse_data = obj
     mouse_serializer = MouseSerializer(data=mouse_data)
     if mouse_serializer.is_valid():
         mouse_serializer.save()
@@ -168,8 +167,8 @@ def hiIHCPU(request):
             "Banana": "0",
             "Ihavecpu": i["price"]
         }
-        j = json.dumps(dat,ensure_ascii=False).encode('utf8')
-        if mouseAdd(j.decode()) == False:
+        j = json.dumps(dat)
+        if mouseAdd(dat) == False:
             return JsonResponse("Failed",safe=False)
     return JsonResponse("All done",safe=False)
 
