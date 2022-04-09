@@ -1,3 +1,4 @@
+from ast import pattern
 from re import I
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -8,10 +9,13 @@ from Webapp.models import Mouse,Keyboard,HeadGear
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
 from Web_Scraping import views as webScrap
 import json
+import re
 
 from django.core.files.storage import default_storage
 
 # Create your views here.
+
+
 
 @csrf_exempt
 def mouseApi(request,id=0):
@@ -19,6 +23,27 @@ def mouseApi(request,id=0):
         if id == 0:
             mouse = Mouse.objects.all()
             mouse_serializer=MouseSerializer(mouse,many=True)
+            for i in mouse_serializer.data:
+                mouseLis.append(dict(i))
+            # for i in mouseLis:
+            #     a = i["Brand"]
+            #     ls1 = list(mouseBrandList.keys())
+            #     if a in ls1:
+            #         mouseBrandList[a] += 1
+            #     else:
+            #         temp = {a:1}
+            #         mouseBrandList.update(temp)
+            # print(mouseBrandList)
+            for i in mouseLis:
+                a = i["Name"]
+                a = a.replace("(",'')
+                a = a.replace(")",'')
+                a = a.replace("-",'')
+                insenGPRO = re.compile(re.escape('G PRO'), re.IGNORECASE)
+                a = insenGPRO.sub('GPRO', a)
+                a = a.split()
+                mouseName.append(a)
+            print(mouseName)
             return JsonResponse(mouse_serializer.data,safe=False)
         else:
             mouse = Mouse.objects.get(MouseId=id)
@@ -146,9 +171,25 @@ def catchTest(dataT):
         return False
 
 
+
+mouseBrandList = {}
+mouseBrandBananaList = []
+mouseLis = []
+mouseName = []
+bananaMouse = []
+bananaMouseName = []
+regName = []
+notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
+colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW"]
+
+
+
+
+
 @csrf_exempt
 def hiBanana(request):
-    lis = webScrap.Banana("keyboard")
+    # patt = re.compile("[0-9]+")
+    lis = webScrap.Banana("mouse")
     for i in lis:
         dat = {
             "Name": i["name"],
@@ -156,11 +197,50 @@ def hiBanana(request):
             "PictureLink": i["img_url"],
             "Detail": i["description"],
             "Banana": i["bananaPrice"],
-            "Ihavecpu": "0"
+            "Ihavecpu": "0",
+            "Color": i["feature"]["Color"]
         }
-        if keyAdd(dat) == False:
-            return JsonResponse("Failed to Upload",safe=False)
-    return JsonResponse("All done",safe=False)
+        if dat["Name"] in notGoodName:
+            pass
+        else:
+            bananaMouse.append(dat)
+    for i in bananaMouse:
+        thaiWord = re.compile(re.escape('เมาส์ไร้สาย'), re.IGNORECASE)
+        a = i["Name"]
+        if ("เมาส์ไร้สาย" in a) and ("Wireless" not in a):
+            a = a.replace("เมาส์ไร้สาย","Wireless")
+        if "[email protected]" in a:
+            a = a.replace("[email protected]",'')
+        if "เพื่อสุขภาพ" in a:
+            a = a.replace("เพื่อสุขภาพ",'')
+        a = a.replace("(",'')
+        a = a.replace(")",'')
+        a = a.replace("-",'')
+        a = a.replace("EO",'')
+        a = thaiWord.sub('',a)
+        a = a.split()
+        # if keyAdd(dat) == False:
+        #     return JsonResponse("Failed to Upload",safe=False)
+        
+        isAdded = False
+        for idx,j in enumerate(a):
+            c = i["Brand"]
+            col = i["Color"]
+            x = re.findall("[0-9]+",j)
+            if x != []:
+                isAdded = True
+                if len(x[0]) < 3:
+                    if idx-1 >= 0:
+                        strt = c + " " + a[idx-1] + " " + j + " " + col
+                        regName.append(strt)
+                else:
+                    regName.append(c+" "+j+" "+col)
+        if not isAdded:
+            regName.append(' '.join(a))
+
+    print(regName)
+    print(len(regName), len(bananaMouse))
+    return JsonResponse(lis,safe=False)
 
 @csrf_exempt
 def hiIHCPU(request):
@@ -178,4 +258,3 @@ def hiIHCPU(request):
             return JsonResponse("Failed",safe=False)
     return JsonResponse("All done",safe=False)
 
-    

@@ -46,7 +46,10 @@ def Banana(device):
             "div", {"class": "product-short-description html-content"})
         # print(description)
         # print(description.text)
-        return description.text
+        if description.text != None:
+            return description.text
+        else:
+            return "ไม่มีข้อมูล"
 
     def getFeature(link):
         feature = {}
