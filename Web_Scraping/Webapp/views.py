@@ -15,7 +15,15 @@ from django.core.files.storage import default_storage
 
 # Create your views here.
 
-
+mouseBrandList = {}
+mouseBrandBananaList = []
+mouseLis = []
+mouseName = []
+bananaMouse = []
+bananaMouseName = []
+regName = []
+notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
+colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"] # unuse
 
 @csrf_exempt
 def mouseApi(request,id=0):
@@ -71,8 +79,31 @@ def mouseApi(request,id=0):
 
 @csrf_exempt
 def mouseAdd(obj):
-    mouse_data = obj
-    mouse_serializer = MouseSerializer(data=mouse_data)
+    temp = []
+    mouseInDB = Mouse.objects.all()
+    mouse_serializer=MouseSerializer(mouseInDB,many=True)
+    a = obj["RegularName"]
+    for i in mouse_serializer.data:
+        temp.append(i["RegularName"])
+    if a in temp:
+        m = Mouse.objects.get(RegularName=a)
+        mOld = MouseSerializer(m)
+        if obj["Ihavecpu"] != 0:
+            t = mOld.data["Banana"]
+            obj["Banana"] = t
+        elif obj["Banana"] != 0:
+            t = mOld.data["Ihavecpu"]
+            obj["Ihavecpu"] = t
+        print(obj)
+        moS = MouseSerializer(m,data=obj)
+        if moS.is_valid():
+            moS.save()
+            return True
+        else:
+            return False
+    else:
+        mouse_data = obj
+        mouse_serializer = MouseSerializer(data=mouse_data)
     if mouse_serializer.is_valid():
         mouse_serializer.save()
         return True
@@ -172,15 +203,7 @@ def catchTest(dataT):
 
 
 
-mouseBrandList = {}
-mouseBrandBananaList = []
-mouseLis = []
-mouseName = []
-bananaMouse = []
-bananaMouseName = []
-regName = []
-notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
-colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW"]
+
 
 
 
@@ -213,6 +236,7 @@ def hiBanana(request):
             a = a.replace("[email protected]",'')
         if "เพื่อสุขภาพ" in a:
             a = a.replace("เพื่อสุขภาพ",'')
+            
         a = a.replace("(",'')
         a = a.replace(")",'')
         a = a.replace("-",'')
@@ -235,7 +259,7 @@ def hiBanana(request):
                         regName.append(strt)
                 else:
                     regName.append(c+" "+j+" "+col)
-        if not isAdded:
+        if isAdded == False:
             regName.append(' '.join(a))
 
     print(regName)
@@ -244,17 +268,46 @@ def hiBanana(request):
 
 @csrf_exempt
 def hiIHCPU(request):
+    colLis = ["BLACK","WHITE","GREY","PINK"]
     lis = webScrap.ihavecpu("mouse")
+    col = "None"
+    temp = ""
+    reg = "None"
     for i in lis:
+        a = i["name"]
+        a = a.replace("(",'')
+        a = a.replace(")",'')
+        a = a.replace("-",'')
+        a = a.replace("G PRO X",'GPROX')
+        a = a.replace("G PRO","GPRO")
+        a = a.split()
+        for idx,j in enumerate(a):
+            x = re.findall("[0-9]+",j)
+            if j in colLis:
+               col = j
+            if x != []:
+                reg = j
+        if reg == "None":
+            temp = ' '.join(a)
+        else:
+            if col == "None":
+                temp = i["brand"] + " " + reg
+            else:
+                temp = i["brand"] + " " + reg + " " + col
+  
         dat = {
             "Name": i["name"],
             "Brand": i["brand"],
             "PictureLink": i["img_url"],
             "Detail": i["description"],
             "Banana": "0",
-            "Ihavecpu": i["price"]
+            "Ihavecpu": i["price"],
+            "RegularName": temp
         }
+        temp = ""
+        col = "None"
+        reg = "None"
         if mouseAdd(dat) == False:
             return JsonResponse("Failed",safe=False)
-    return JsonResponse("All done",safe=False)
+    return JsonResponse(lis,safe=False)
 
