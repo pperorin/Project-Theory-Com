@@ -6,7 +6,7 @@ const PageLayout = (props) => {
     return (
         <>
             <NavigationBar />
-            {children}
+            <div className="container mx-auto pt-8">{children}</div>
         </>
     );
 };

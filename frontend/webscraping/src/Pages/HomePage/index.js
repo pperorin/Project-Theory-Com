@@ -3,9 +3,7 @@ import {PageLayout} from '../../components'
 const HomePage = () => {
     return (
         <PageLayout>
-        <div>
-            <h1>This is Home Page</h1>
-            </div>
+            <h1 className="text-center text-3xl font-bold underline">This is HomePage</h1>
         </PageLayout>
     );
 }
