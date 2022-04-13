@@ -1,3 +1,4 @@
+from re import U
 from django.urls import re_path as url
 from Webapp import views
 
@@ -11,11 +12,18 @@ urlpatterns=[
     url(r'^headgear$', views.headGearApi),
     url(r'^headgear/(?P<id>[0-9]+)$', views.headGearApi),
 
+    # Add Mouse to database
     url(r'^bananaMouse$', views.addMouseFromBanana),
-
     url(r'^ihaveCPUMouse$', views.addMouseFromIHav),
+    
+    # Add Keyboard to database
+    url(r'^bananaKB$', views.addKBFromBanana),
+    # url(r'^iHaveCpuKB$', views.addKBFromIHaveCpu)
 
-    url(r'^bananaKB$', views.addKBFromBanana)
+    # Add HeadGear to database
+    url(r'^bananaHeadGear$', views.addHeadGearBanana),
+    # url(r'^iHaveCpuHeadGear', views)
+    
     # url(r'^testHi',views.testHi)
 ]
 

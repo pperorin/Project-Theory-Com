@@ -1,6 +1,3 @@
-from ast import pattern
-from re import I
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -8,7 +5,6 @@ import requests
 from Webapp.models import Mouse,Keyboard,HeadGear
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
 from Web_Scraping import views as webScrap
-import json
 import re
 
 from django.core.files.storage import default_storage
@@ -373,12 +369,15 @@ def addKBFromBanana(requset):
             return JsonResponse("Failed",safe=False)
     return JsonResponse(bananaKB,safe=False)
 
+# @csrf_exempt
+# def addKBFromIHaveCpu(request):
+#     iHaveCpuKB = webScrap.ihavecpu("keyboard")
+#     return JsonResponse(iHaveCpuKB, safe=False)
 
-
-
-
-
-
+@csrf_exempt
+def addHeadGearBanana(request):
+    listOfHeadGear = webScrap.Banana("headphone")
+    return JsonResponse(listOfHeadGear, safe=False)
 
 
 
