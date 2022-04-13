@@ -11,9 +11,10 @@ urlpatterns=[
     url(r'^headgear$', views.headGearApi),
     url(r'^headgear/(?P<id>[0-9]+)$', views.headGearApi),
 
-    url(r'^banana$', views.hiBanana),
+    url(r'^banana$', views.addMouseFromBanana),
 
-    url(r'^ihaveCPU$', views.hiIHCPU)
+    url(r'^ihaveCPU$', views.addMouseFromIHav),
+    # url(r'^testHi',views.testHi)
 ]
 
 

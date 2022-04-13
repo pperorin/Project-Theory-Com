@@ -88,13 +88,18 @@ def mouseAdd(obj):
     if a in temp:
         m = Mouse.objects.get(RegularName=a)
         mOld = MouseSerializer(m)
-        if obj["Ihavecpu"] != 0:
-            t = mOld.data["Banana"]
-            obj["Banana"] = t
-        elif obj["Banana"] != 0:
-            t = mOld.data["Ihavecpu"]
-            obj["Ihavecpu"] = t
-        print(obj)
+        ## Add Price from Banana
+        if obj["Banana"] != "0" and mOld.data["Banana"] == "0":
+            obj["Ihavecpu"] = mOld.data["Ihavecpu"]
+        ## Add Price from Ihavecpu
+        elif obj["Ihavecpu"] != "0" and mOld.data["Ihavecpu"] == "0":
+            obj["Banana"] = mOld.data["Banana"]
+        ## Update Price of Banana
+        elif obj["Banana"] != "0" and mOld["Banana"] != 0:
+            obj["Ihavecpu"] = mOld.data["Ihavecpu"]
+        ## Update Price of Ihavecpu
+        elif obj["Ihavecpu"] != "0" and mOld["Ihavecpu"] != 0:
+            obj["Banana"] = mOld.data["Banana"]
         moS = MouseSerializer(m,data=obj)
         if moS.is_valid():
             moS.save()
@@ -205,14 +210,10 @@ def catchTest(dataT):
 
 
 
-
-
-
-
 @csrf_exempt
-def hiBanana(request):
-    # patt = re.compile("[0-9]+")
+def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
+    temp =""
     for i in lis:
         dat = {
             "Name": i["name"],
@@ -221,6 +222,7 @@ def hiBanana(request):
             "Detail": i["description"],
             "Banana": i["bananaPrice"],
             "Ihavecpu": "0",
+            "RegularName": temp, 
             "Color": i["feature"]["Color"]
         }
         if dat["Name"] in notGoodName:
@@ -243,9 +245,7 @@ def hiBanana(request):
         a = a.replace("EO",'')
         a = thaiWord.sub('',a)
         a = a.split()
-        # if keyAdd(dat) == False:
-        #     return JsonResponse("Failed to Upload",safe=False)
-        
+
         isAdded = False
         for idx,j in enumerate(a):
             c = i["Brand"]
@@ -253,26 +253,22 @@ def hiBanana(request):
             x = re.findall("[0-9]+",j)
             if x != []:
                 isAdded = True
-                if len(x[0]) < 3:
-                    if idx-1 >= 0:
-                        strt = c + " " + a[idx-1] + " " + j + " " + col
-                        regName.append(strt)
-                else:
-                    regName.append(c+" "+j+" "+col)
+                strt = c + " " + j + " " + col
+                i["RegularName"] = strt
         if isAdded == False:
-            regName.append(' '.join(a))
-
-    print(regName)
-    print(len(regName), len(bananaMouse))
-    return JsonResponse(lis,safe=False)
+            i["RegularName"] = ' '.join(a)
+        if mouseAdd(i) == False:
+            JsonResponse("Failed To Add",safe=False)
+    return JsonResponse("Complete",safe=False)
 
 @csrf_exempt
-def hiIHCPU(request):
+def addMouseFromIHav(request):
     colLis = ["BLACK","WHITE","GREY","PINK"]
     lis = webScrap.ihavecpu("mouse")
     col = "None"
     temp = ""
     reg = "None"
+    datLis = []
     for i in lis:
         a = i["name"]
         a = a.replace("(",'')
@@ -309,5 +305,43 @@ def hiIHCPU(request):
         reg = "None"
         if mouseAdd(dat) == False:
             return JsonResponse("Failed",safe=False)
-    return JsonResponse(lis,safe=False)
+        datLis.append(dat)
+    return JsonResponse(datLis,safe=False)
 
+
+# def testHi(requset):
+#     for i in range(10,100,10):
+#         dat = {
+#             "Name": "test",
+#             "Brand": "test",
+#             "PictureLink": "test",
+#             "Detail": "test",
+#             "Banana": str(i),
+#             "Ihavecpu": "0",
+#             "RegularName": "test" + " " + str(i)
+#         }
+#         if mouseAdd(dat) == False:
+#             return JsonResponse("Failed Test",safe=False)
+#         dat1 = {
+#             "Name": "test",
+#             "Brand": "test",
+#             "PictureLink": "test",
+#             "Detail": "test",
+#             "Banana": "0",
+#             "Ihavecpu": str(i),
+#             "RegularName": "test" + " " + str(i)
+#         }
+#         if mouseAdd(dat1) == False:
+#             return JsonResponse("Faled Test",safe=False)
+#         dat2 = {
+#             "Name": "test",
+#             "Brand": "test",
+#             "PictureLink": "test",
+#             "Detail": "test",
+#             "Banana": "0",
+#             "Ihavecpu": str(i+10),
+#             "RegularName": "test" + " " + str(i)
+#         }
+#         if mouseAdd(dat2) == False:
+#             return JsonResponse("Failed Test",safe=False)
+#     return JsonResponse("Cool",safe=False)
