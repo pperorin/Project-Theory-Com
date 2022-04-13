@@ -335,18 +335,17 @@ def addKBFromBanana(requset):
         a = i["Name"]
         a = a.replace("(Red Switch)",'Red Switch')
         a = a.replace("(Blue Switch)",'Blue Switch')
-        tp = a.split()
-        newStr = []
-        for j in tp:
+        lis=[]
+        for m in a.split():
+            lis.append(m)
+        for j in lis:
             if "(" in j:
-                pass
-            if "คีย์บอร์ดไร้สาย" in j:
-                pass
-            if "คีย์บอร์ด" in j:
-                pass
-            else:
-                newStr.append(j)
-        a = " ".join(newStr)
+                lis.pop(lis.index(j))
+            elif "คีย์บอร์ดไร้สาย" in j:
+                lis.pop(lis.index(j))
+            elif "คีย์บอร์ด" in j:
+                lis.pop(lis.index(j))
+        a = " ".join(lis)
         a = a.replace("-",'')
         a = a.replace("/",' ')
         a = a.replace("EN",'')
