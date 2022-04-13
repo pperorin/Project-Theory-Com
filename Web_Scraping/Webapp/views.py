@@ -122,8 +122,36 @@ def keyboardApi(request,id=0):
 
 @csrf_exempt
 def keyAdd(obj):
-    keyboard_data = obj
-    keyboard_serializer=KeyboardSerializer(data=keyboard_data)
+    temp = []
+    kbInDB = Keyboard.objects.all()
+    keyboard_serializer=KeyboardSerializer(kbInDB,many=True)
+    a = obj["RegularName"]
+    for i in keyboard_serializer.data:
+        temp.append(i["RegularName"])
+    if a in temp:
+        k = Keyboard.objects.get(RegularName=a)
+        kOld = KeyboardSerializer(k)
+        ## Add Price from Banana
+        if obj["Banana"] != "0" and kOld.data["Banana"] == "0":
+            obj["Ihavecpu"] = kOld.data["Ihavecpu"]
+        ## Add Price from Ihavecpu
+        elif obj["Ihavecpu"] != "0" and kOld.data["Ihavecpu"] == "0":
+            obj["Banana"] = kOld.data["Banana"]
+        ## Update Price of Banana
+        elif obj["Banana"] != "0" and kOld["Banana"] != 0:
+            obj["Ihavecpu"] = kOld.data["Ihavecpu"]
+        ## Update Price of Ihavecpu
+        elif obj["Ihavecpu"] != "0" and kOld["Ihavecpu"] != 0:
+            obj["Banana"] = kOld.data["Banana"]
+        koS = KeyboardSerializer(k,data=obj)
+        if koS.is_valid():
+            koS.save()
+            return True
+        else:
+            return False
+    else:
+        keyboard_data = obj
+        keyboard_serializer=KeyboardSerializer(data=keyboard_data)
     if keyboard_serializer.is_valid():
         keyboard_serializer.save()
         return True
@@ -228,9 +256,12 @@ def addMouseFromBanana(request):
             if x != []:
                 isAdded = True
                 strt = c + " " + j + " " + col
-                i["RegularName"] = strt.upper()
+                strup = strt.upper()
+                i["RegularName"] = strup
         if isAdded == False:
-            i["RegularName"] = (' '.join(a)).upper()
+            getjoinstr = ' '.join(a)
+            getupstr = getjoinstr.upper()
+            i["RegularName"] = getupstr
         if mouseAdd(i) == False:
             JsonResponse("Failed To Add",safe=False)
     return JsonResponse("Complete",safe=False)
@@ -283,23 +314,72 @@ def addMouseFromIHav(request):
     return JsonResponse(datLis,safe=False)
 
 
-# @csrf_exempt
-# def addKBFromBanana(requset):
-#     lis = webScrap.Banana("mouse")
-#     temp =""
-#     for i in lis:
-#         dat = {
-#             "Name": i["name"],
-#             "Brand": i["brand"],
-#             "PictureLink": i["img_url"],
-#             "Detail": i["description"],
-#             "Banana": i["bananaPrice"],
-#             "Ihavecpu": "0",
-#             "RegularName": temp, 
-#             "Color": i["feature"]["Color"]
-#         }
-#         bananaKB.append(dat)
-#     for i in bananaKB:
+@csrf_exempt
+def addKBFromBanana(requset):
+    reg = "None"
+    lis = webScrap.Banana("keyboard")
+    temp =""
+    for i in lis:
+        dat = {
+            "Name": i["name"],
+            "Brand": i["brand"],
+            "PictureLink": i["img_url"],
+            "Detail": i["description"],
+            "Banana": i["bananaPrice"],
+            "Ihavecpu": "0",
+            "RegularName": temp, 
+            "Color": i["feature"]["Color"]
+        }
+        bananaKB.append(dat)
+    for i in bananaKB:
+        a = i["Name"]
+        a = a.replace("(Red Switch)",'Red Switch')
+        a = a.replace("(Blue Switch)",'Blue Switch')
+        tp = a.split()
+        newStr = []
+        for j in tp:
+            if "(" in j:
+                pass
+            if "คีย์บอร์ดไร้สาย" in j:
+                pass
+            if "คีย์บอร์ด" in j:
+                pass
+            else:
+                newStr.append(j)
+        a = " ".join(newStr)
+        a = a.replace("-",'')
+        a = a.replace("/",' ')
+        a = a.replace("EN",'')
+        a = a.replace("TH",'')
+        a = a.replace("EO",'')
+        a = a.replace("G PRO",'GPRO')
+        i["Name"] = a
+        a = a.split()
+
+        for j in a:
+            x = re.findall("[0-9]+",j)
+            if x != []:
+                reg = j
+        if reg == "None":
+            temp = ' '.join(a)
+            temp = temp.upper()
+            i["RegularName"] = temp
+        else:
+            temp = i["Brand"] + " " + reg + " " + i["Color"]
+            temp = temp.upper()
+            i["RegularName"] = temp
+        temp = ""
+        reg = "None"
+        if keyAdd(i) == False:
+            return JsonResponse("Failed",safe=False)
+    return JsonResponse(bananaKB,safe=False)
+
+
+
+
+
+
+
 
 
 
