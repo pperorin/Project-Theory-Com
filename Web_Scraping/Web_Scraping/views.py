@@ -23,8 +23,10 @@ import re
 
 def helloFromWebScr(request):
     # return JsonResponse("Hello", safe=False)
-    return JsonResponse(Banana("mouse"), safe=False)
+    return JsonResponse(Banana("keyboard"), safe=False)
 
+def hellofromIhaveCPU(request):
+    return JsonResponse(ihavecpu("keyboard"), safe=False)
 
 @csrf_exempt
 def throwTest(request):
@@ -80,7 +82,6 @@ def Banana(device):
     soup = BeautifulSoup(res.text, 'html.parser')
     page = soup.find_all("button", {"class": "vmq-pagination-link"})
     numberOfPage = int(page[-1].text[1:-1])
-    print("Number of pages : ", numberOfPage)
 
     datas = []
     for numPage in range(1, numberOfPage+1):
@@ -118,7 +119,7 @@ def Banana(device):
             # description
             obj["description"] = getDescription(obj["link"])
             # feature
-            obj["feature"] = getFeature(obj["link"])
+            # obj["feature"] = getFeature(obj["link"])
             datas.append(obj)
             # print(obj)
     return datas
@@ -163,8 +164,8 @@ def ihavecpu(device):
                 "title").split(" ")
             brand = name[1]
             realname = ""
-            for i in range(2, len(name)):
-                realname += name[i] + " "
+            for j in range(2, len(name)):
+                realname += name[j] + " "
             link = device[i].find(
                 "a", {"class": "gadgetThumbnail"}).get("href")
             price = device[i].find(
