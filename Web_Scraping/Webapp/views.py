@@ -228,9 +228,9 @@ def addMouseFromBanana(request):
             if x != []:
                 isAdded = True
                 strt = c + " " + j + " " + col
-                i["RegularName"] = strt
+                i["RegularName"] = strt.upper()
         if isAdded == False:
-            i["RegularName"] = ' '.join(a)
+            i["RegularName"] = (' '.join(a)).upper()
         if mouseAdd(i) == False:
             JsonResponse("Failed To Add",safe=False)
     return JsonResponse("Complete",safe=False)
