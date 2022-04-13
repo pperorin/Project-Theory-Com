@@ -15,13 +15,8 @@ from django.core.files.storage import default_storage
 
 # Create your views here.
 
-mouseBrandList = {}
-mouseBrandBananaList = []
-mouseLis = []
-mouseName = []
 bananaMouse = []
-bananaMouseName = []
-regName = []
+bananaKB = []
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"] # unuse
 
@@ -31,27 +26,6 @@ def mouseApi(request,id=0):
         if id == 0:
             mouse = Mouse.objects.all()
             mouse_serializer=MouseSerializer(mouse,many=True)
-            for i in mouse_serializer.data:
-                mouseLis.append(dict(i))
-            # for i in mouseLis:
-            #     a = i["Brand"]
-            #     ls1 = list(mouseBrandList.keys())
-            #     if a in ls1:
-            #         mouseBrandList[a] += 1
-            #     else:
-            #         temp = {a:1}
-            #         mouseBrandList.update(temp)
-            # print(mouseBrandList)
-            for i in mouseLis:
-                a = i["Name"]
-                a = a.replace("(",'')
-                a = a.replace(")",'')
-                a = a.replace("-",'')
-                insenGPRO = re.compile(re.escape('G PRO'), re.IGNORECASE)
-                a = insenGPRO.sub('GPRO', a)
-                a = a.split()
-                mouseName.append(a)
-            print(mouseName)
             return JsonResponse(mouse_serializer.data,safe=False)
         else:
             mouse = Mouse.objects.get(MouseId=id)
@@ -307,6 +281,38 @@ def addMouseFromIHav(request):
             return JsonResponse("Failed",safe=False)
         datLis.append(dat)
     return JsonResponse(datLis,safe=False)
+
+
+# @csrf_exempt
+# def addKBFromBanana(requset):
+#     lis = webScrap.Banana("mouse")
+#     temp =""
+#     for i in lis:
+#         dat = {
+#             "Name": i["name"],
+#             "Brand": i["brand"],
+#             "PictureLink": i["img_url"],
+#             "Detail": i["description"],
+#             "Banana": i["bananaPrice"],
+#             "Ihavecpu": "0",
+#             "RegularName": temp, 
+#             "Color": i["feature"]["Color"]
+#         }
+#         bananaKB.append(dat)
+#     for i in bananaKB:
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # def testHi(requset):
