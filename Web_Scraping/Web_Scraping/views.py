@@ -23,10 +23,10 @@ import re
 
 def helloFromWebScr(request):
     # return JsonResponse("Hello", safe=False)
-    return JsonResponse(Banana("keyboard"), safe=False)
+    return JsonResponse(Banana("headphone"), safe=False)
 
 def hellofromIhaveCPU(request):
-    return JsonResponse(ihavecpu("keyboard"), safe=False)
+    return JsonResponse(ihavecpu("headphone"), safe=False)
 
 @csrf_exempt
 def throwTest(request):
@@ -61,9 +61,9 @@ def Banana(device):
         table = soup.find(
             "table", {"class": "product-detail-specification-table table -striped"})
         info = table.find_all("td")
-        for i in range(0, len(info), 2):
-            feature[info[i].text[1:-1]] = info[i+1].text[1:-1]
-            # print(info[i].text[1:-1],info[i+1].text[1:-1])
+        for j in range(0, len(info), 2):
+            feature[info[j].text[1:-1]] = info[j+1].text[1:-1]
+            # print(info[j].text[1:-1],info[j+1].text[1:-1])
         return feature
 
     if device == "mouse":
@@ -85,6 +85,7 @@ def Banana(device):
 
     datas = []
     for numPage in range(1, numberOfPage+1):
+        print("Now page is: ", numPage)
         res = requests.get(url+str(numPage))
         # res = requests.get(url[input]+str(1))
         res.encoding = "utf-8"
@@ -152,6 +153,7 @@ def ihavecpu(device):
     datas = []
 
     for numPage in range(numberOfPage + 1):
+        print("Now page is: ", numPage)
         res = requests.get(url+str(numPage))
         soup = BeautifulSoup(res.text, 'html.parser')
 
