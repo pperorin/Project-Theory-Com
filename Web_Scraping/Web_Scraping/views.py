@@ -120,7 +120,7 @@ def Banana(device):
             # description
             obj["description"] = getDescription(obj["link"])
             # feature
-            # obj["feature"] = getFeature(obj["link"])
+            obj["feature"] = getFeature(obj["link"])    
             datas.append(obj)
             # print(obj)
     return datas
