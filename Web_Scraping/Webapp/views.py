@@ -1,3 +1,6 @@
+from math import degrees
+from sys import set_asyncgen_hooks
+from tempfile import tempdir
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -13,6 +16,8 @@ from django.core.files.storage import default_storage
 
 bananaMouse = []
 bananaKB = []
+bananaHeadGear = []
+
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"] # unuse
 
@@ -206,8 +211,6 @@ def catchTest(dataT):
 
 
 
-
-
 @csrf_exempt
 def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
@@ -327,6 +330,7 @@ def addKBFromBanana(requset):
             "Color": i["feature"]["Color"]
         }
         bananaKB.append(dat)
+
     for i in bananaKB:
         a = i["Name"]
         a = a.replace("(Red Switch)",'Red Switch')
@@ -374,22 +378,143 @@ def addKBFromBanana(requset):
 #     iHaveCpuKB = webScrap.ihavecpu("keyboard")
 #     return JsonResponse(iHaveCpuKB, safe=False)
 
+
+# HeadGear
 @csrf_exempt
 def addHeadGearBanana(request):
+    # get name of all headgear from Banana
     listOfHeadGear = webScrap.Banana("headphone")
-    return JsonResponse(listOfHeadGear, safe=False)
+
+    # filter only needed info and add to bananaHeadGear
+    temp = ""
+    for item in listOfHeadGear:
+        dataOfHeadGear = {
+            "Name": item["name"],
+            "Brand": item["brand"],
+            "Color": item["feature"]["Color"],
+            "Banana": item["bananaPrice"],
+            "Ihavecpu": "0",
+            "PictureLink": item["img_url"],
+            "Detail": item["description"],
+            "RegularName": temp
+        }
+        bananaHeadGear.append(dataOfHeadGear)
+
+    # renaming for "RugularName"
+    nameList = []
+    for item in bananaHeadGear:
+        itemName = item["Name"]
+        removeWords = ["ฟังสปอร์ต", "หูฟังไร้สาย", "หูฟังเกมมิ่ง", "หูฟังใส่ออกกำลังกาย", "หูฟัง", "หู", "รุ่น "]
+        for word in removeWords:
+            if word in itemName:
+                itemName = itemName.replace(word, "")
+        nameList.append(itemName)
+
+    print(nameList)
+    return JsonResponse(bananaHeadGear, safe=False)
+
+@csrf_exempt
+def testRenamingBNNHeadGear(request):
+    currentHeadGearName = ['Sony Pulse 3D Wireless Headset PS5- Midnight Black', 'Samsung Galaxy Buds2', 'Samsung Galaxy Buds Pro Phantom Violet', 'Samsung Galaxy Buds Pro Phantom Silver', 'Samsung Galaxy Buds Pro Phantom Black', 'OPPO Enco Buds', 'OPPO Enco X', '1 More In-Ear Wireless TWS Comfo Buds Pro Black', '1 More In-Ear Wireless TWS Comfo Buds Pro White', '1 More In-Ear Wireless TWS Colour Buds Black', 'Aftershokz Wireless Headphone Openmove', 'Aftershokz Xtrainerz Sapphire', 'Anitech Headphone with Mic. AK39', 'Anitech Headphone with Mic. AK75', 'Audio Technica Headphone In-Ear Sport10', 'Audio Technica Headphone Professional Monitor Series M20X', 'Audio Technica In Ear with Mic. Wireless CLR100BT', 'AUKEY EP-M1 True Wireless Earbuds Black (EP-M1)', 'AUKEY EP-T25 True Wireless Earbuds Black (EP-T25)', 'AUKEY True Wireless Earbuds White (EP-T25)', 'B&O In-Ear Wireless TWS E8', 'B&O In-Ear Wireless TWS E8 3RD GEN', 'B&O In-Ear Wireless TWS E8 3RD GEN Sport', 'Black Shark Lucifer T1', 'Blue Box Earbud Wireless TWS AP-01', 'Blue Box Headphone TWS APG01', 'Blue Box Headphone TWS BB Pro', 'Blue Box Headphone Wireless ED-01', 'Blue Box Headphone Wireless H2', 'Blue Box In-Ear Wireless EE001', 'Blue Box In-Ear with Mic. BN-X50', 'Blue Box In-Ear with Mic. MS-212', 'Blue Box In-Ear with Mic. SH1', 'Blue Box Inear Wireless TWS AP PRO White', 'Defunc Earbud TWS\xa0True Basic', 'E&P Stereo Earphone EP-EE08', 'E&P Stereo Earphone EP-EE20 White/White', 'E&P Stereo Sport Bluetooth Headphone EP-BL06', 'Fantech Gaming Headset HG24 Specter II', 'Fantech Gaming Headset MH87 BLITZ', 'Fantech Gaming Headset Wh01 Wireless Black', 'Huawei In-Ear Wireless TWS Freebuds 4', 'IPIPOO In-Ear Wireless TWS TP-18', 'IPIPOO In-Ear Wireless TWS TP-9', 'IPIPOO In-Ear with Mic. Wireless IL-804', 'Jabra Bluetooth Headset Talk 15', 'Jabra Bluetooth Headset Talk 45 Black', 'Jabra Bluetooth Headset Talk 5 Black', 'Jabra Headset Elite 65T Copper Black', 'Jabra In-Ear Wireless TWS Elite 2', 'Jabra In-Ear Wireless TWS Elite 3', 'Jabra In-Ear Wireless TWS Elite 7 Active', 'Jabra In-Ear Wireless TWS Elite 7 PRO', 'Jabra In-Ear Wireless TWS Elite 75T Titanium Black', 'Jabra In-Ear Wireless TWS Elite 85T Grey', 'Jabra In-Ear Wireless TWS Elite Active 65T Copper Blue', 'Jabra In-Ear Wireless TWS Elite Active 65T Titanium Black', 'JBL Earbud TWS T225', 'JBL Earbud TWS T225 Ghost Edition Clear', 'JBL In Ear Endurance DIVE Waterproof Wireless with MP3 Player', 'JBL In Ear Endurance RUN Sweatproof Wired Sports Black', 'JBL In Ear Endurance RUN Sweatproof Wired Sports Red', 'JBL In Ear Endurance SPRINT Waterproof Wireless Black', 'JBL In Ear Endurance SPRINT Waterproof Wireless Red', 'JBL In-Ear Wireless TWS Endurance PEAK Black', 'JBL In-Ear Wireless TWS Endurance PEAK Blue', 'JBL In-Ear Wireless TWS Endurance PEAK II Black', 'JBL In-Ear Wireless TWS Endurance PEAK Red', 'JBL In-Ear Wireless TWS Live Black', 'JBL In-Ear Wireless TWS Live Blue', 'JBL In-Ear Wireless TWS Live Pink', 'JBL In-Ear Wireless TWS Under Armour Black', 'JBL In-Ear Wireless TWS Under Armour Red', 'JBL In-Ear with Mic. T110', 'JBL In-Ear with Mic. T110 Blue', 'JBL In-Ear with Mic. T110 White', 'JLAB Headphone Wireless Go Work Black', 'Jlab Headphone Wireless Rewind Retro Black', 'Jlab Headphone with Mic. Wireless Studio Pro Over Ear Black', 'Jlab In-Ear Wireless TWS Epic Air ANC Black', 'Jlab In-Ear Wireless TWS Epic Air Sport ANC Black', 'Jlab In-Ear Wireless TWS Go Air Black', 'Jlab In-Ear Wireless TWS Go Air Blue Black', 'Jlab In-Ear Wireless TWS Go Air Green Black', 'Jlab In-Ear Wireless TWS Jbuds Air Sport Black', 'Lenovo Gaming Headset IdeaPad  H100', 'Logitech Gaming Headset G PRO X Wireless', 'Logitech Gaming Headset G333 White', 'Logitech Gaming Headset G335 Wired', 'Logitech Gaming Headset G435 Lightspeed', 'Logitech Gaming Headset Pro X League of Legends Edition', 'Marshall In-Ear Wireless TWS Mode II Black', 'Marshall In-Ear with Mic. Mode EQ Black and Brass', 'Master and Dynamic In-Ear Wireless TWS MW07 GO Electric Blue', 'Master and Dynamic In-Ear Wireless TWS MW07 GO Flame Red', 'Master and Dynamic In-Ear Wireless TWS MW07 PLUS Black Pearl', 'Master and Dynamic In-Ear Wireless TWS MW07 PLUS Tortoise Shell', 'Master and Dynamic In-Ear Wireless TWS MW08 Black/Matte Black', 'Master and Dynamic In-Ear Wireless TWS MW08 Blue/Polished Graphite', 'Master and Dynamic In-Ear Wireless TWS MW08 White/Polished Silver', 'Monster In-Ear Wireless TWS Clarity 102 Airlinks', 'Motorola Bluetooth Headset HK255 Black', 'Motorola In-Ear Headphone Pace 125 Red', 'Motorola In-Ear Headphone Pace 200 Silver', 'Motorola In-Ear Pace 125 Black', 'Motorola In-Ear Pace 200 Gold', 'Motorola In-Ear Wireless Headset Verveloop 200 Black', 'Motorola In-Ear Wireless TWS Headset Verebuds 200 Sport Red', 'Motorola In-Ear Wireless TWS Headset Verebuds 200 Sport Royal Blue', 'Motorola In-Ear Wireless TWS Headset Verebuds 200 Sport Black', 'Motorola In-Ear Wireless TWS Vervebuds 100 Black', 'Motorola In-Ear Wireless TWS Vervebuds 100 White', 'Motorola In-Ear Wireless TWS Vervebuds 110 White', 'Motorola In-Ear Wireless TWS Vervebuds 400 Black', 'Nubwo Gaming Headset X80 Pro Wireless', 'Nubwo Gaming Headset X85 RGB', 'Nubwo Gaming Headset X98 Ping Edition', 'Onikuma Gaming Headset B60 Bluetooth Black', 'Onikuma Gaming Headset K10 Pro RGB Black', 'Onikuma Gaming Headset K20 RGB 7.1 Orange/Black', 'Onikuma Gaming Headset K9 3.5mm', 'Onikuma Gaming Headset K9 3.5mm (Special Edition Black)', 'Onikuma Gaming Headset K9 3.5mm (Special Edition Green)', 'Onikuma Gaming Headset K9 7.1 Power Honor Black', 'Onikuma Gaming Headset X11 RGB Limited Edition', 'Onikuma Gaming Headset X15 Pro RGB Black', 'Onikuma Gaming Headset X20 RGB 7.1 Black', 'Onikuma Gaming Headset X7 Pro 3.5 with RGB Black', 'QPLUS Braided Heaphone 3.5 Plug', 'QPLUS Braided Heaphone Type-C Plug', 'QPLUS Colorful Wired Headphone 3.5mm Blue', 'QPLUS Colorful Wired Headphone 3.5mm Grey', 'QPLUS Colorful Wired Headphone 3.5mm Pink', 'QPLUS Colorful Wired Headphone 3.5mm Yellow', 'QPLUS Earbud with Mic. SMT-16 Red', 'QPLUS Headphone QH002 Black', 'QPLUS Headphone Wireless ED-03', 'QPLUS In-Ear with Mic. K12 Black', 'QPLUS In-Ear with Mic. K12 White', 'QPLUS In-Ear with Mic. SF1', 'QPLUS In-Ear with Mic. STC-03 Black', 'QPLUS In-Ear with Mic. Wireless BT3 Black', 'QPLUS In-Ear with Mic. Wireless BT4 Black', 'QPLUS In-Ear with Mic. Wireless S5', 'QPLUS TWS BT12 White', 'QPLUS TWS Candy SQ-W6 Black', 'QPLUS TWS Candy SQ-W6 Mint', 'QPLUS TWS Candy SQ-W6 Pink', 'Razer Gaming Headset Barracuda X Wireless Black', 'Razer Gaming Headset Kraken V3 Hypersense', 'Razer Gaming Headset Opus X', 'Realme Buds Air 2', 'Realme Buds Air Pro (RMA210) White', 'Realme Buds Classic', 'Realme Buds Q (RMA215)', 'Rizz In-Ear With mic Model REM-1215C White', 'Rizz In-Ear With mic Model REM-1217C Black', 'Sennheiser Headphone TWS CX Plus TW Black', 'Sennheiser Headphone TWS CX Plus TW White', 'Sennheiser Headphone with Mic. Wireless TWS CX200TW', 'Sennheiser Headphone with Mic. Wireless TWSCX400TW1 White', 'Sennheiser In-Ear Wireless CX 150BT Black', 'SIGNO Gaming Headphone In-Ear SPACER EP-619 Black', 'Signo Gaming Headset 7.1 Striker HP-832', 'Signo Gaming Headset Bazzle HP-833 7.1 Black', 'Signo Gaming Headset Brexxon HP-830 7.1 Black', 'Skullcandy Headphone with Mic. Wireless TWS Dime Black Red', 'Skullcandy Headphone with Mic. Wireless TWS Indy EVO True Bleck', 'Skullcandy Headphone with Mic. Wireless TWS Sesh EVO Black Red', 'Sony Headphone with Mic. MDR ZX310AP Black', 'Sony Headphone with Mic. MDR ZX310AP Blue', 'Sony Headphone with Mic. MDR ZX310AP Red', 'Sony Headphone with Mic. Wireless TWS WF-1000XM3BME Silver', 'Sony Headphone with Mic. Wireless TWS WF-1000XM3BME Black', 'Sony Headphone with Mic. Wireless TWS WF-1000XM4', 'Sony Headphone with Mic. Wireless TWS WF-C500', 'Sony Headphone with Mic. Wireless TWS WF-SP800N/LME Blue', 'Sony Headphone with Mic. Wireless TWS WF-SP800N/WME White', 'Sony Headphone with Mic. Wireless WH-1000XM4BME Black', 'Sony Headphone with Mic. Wireless WH-1000XM4SME Silver', 'Sony In Ear with Mic. Wireless WI-SP510/DZ E Orange', 'Sony In Ear with Mic. Wireless WI-SP510/WZ E White', 'SteelSeries Gaming Headset Arctis 7 Plus Black', 'SteelSeries Gaming Headset Arctis 7P Plus Wireless White', 'Sudio Earbud Wireless TWS NIO', 'Sudio In-Ear Wireless TWS ETT Black', 'Sudio In-Ear Wireless TWS ETT Green', 'Sudio In-Ear Wireless TWS ETT Pink', 'Sudio In-Ear Wireless TWS ETT White', 'TECHPRO Earbud Headphone with Mic. 3.5mm Black', 'TECHPRO Earbud Headphone with Mic. 3.5mm White', 'TECHPRO Earbud with Mic. S12 Black', 'TECHPRO Headphone TWS Matellic Gray', 'TECHPRO Headphone TWS S1 Black', 'TECHPRO Headphone Wireless ED-02 Black', 'TECHPRO Headphones TH002-BK Black', 'TECHPRO In-Ear Wireless TE001 Black', 'TECHPRO In-Ear Wireless TE001 Blue', 'TECHPRO In-Ear Wireless TE001 Red', 'TECHPRO In-ear with Mic Type-C Wired Headphones', 'TECHPRO In-Ear with Mic. EL112 Black', 'TECHPRO In-Ear with Mic. EL112 Red', 'TECHPRO In-Ear with Mic. EL112 White', 'TECHPRO In-Ear with Mic. EL122 Silver', 'TECHPRO In-Ear with Mic. K14 Black', 'TECHPRO In-Ear with Mic. K14 White', 'TECHPRO In-Ear with Mic. Wireless BT2 Black', 'TheCoopidea In-Ear Wireless TWS Beans Air Ash', 'TheCoopidea In-Ear Wireless TWS Beans Air Sakura', 'TheCoopidea In-Ear Wireless TWS Beans Air Turquoise', 'TheCoopidea In-Ear Wireless TWS Sanrio Beans Little Twin Stars', 'TheCoopidea In-Ear Wireless TWS Sanrio Beans My Melody', 'Urbanears Earbud with Mic. Wireless Jakan Ash Grey', 'Urbanears Headphone with Mic. Wireless TWS Alby Charcoal Black', 'Urbanears Headphone with Mic. Wireless TWS Alby Dusty White', 'Urbanears Headphone with Mic. Wireless TWS Alby Teal Green', 'Urbanears Headphone with Mic. Wireless TWS Alby True Maroon', 'Urbanears Headphone with Mic. Wireless TWS Alby Ultra Violet', 'Urbanears Headphone with Mic. Wireless TWS Luma Charcoal Black', 
+    'Urbanears Headphone with Mic. Wireless TWS Luma Dustry White', 'Urbanears Headphone with Mic. Wireless TWS Luma Teal Green', 'Urbanears Headphone with Mic. Wireless TWS Luma True Maroon', 'Urbanears Headphone with Mic. Wireless TWS Luma Ultra Violet', 'Xiaomi Buds 3', 'Xiaomi Buds 3T Pro', 'Xiaomi In-Ear Headphones Basic Black', 'Xiaomi Mi FlipBuds Pro Black', 'Xiaomi Mi In-Ear Headphones Basic SL White (14274)', 'Xiaomi Mi True Wireless Earphones 2 Basic White', 'Xiaomi Redmi Buds 3 Lite', 'Xiaomi Redmi Buds 3 Pro', 'Xiaomi Redmi Buds 3 White', ' Blue Box BB001', ' QPLUS In-Ear with Mic. SF1', 'หู Shokz Openrun', 'หู Shokz Openrun Pro', ' Fantech Gaming Headset HG20 RGB Black', ' Shokz Openmove', ' B&O รุ่น BEOPLAY EQ', ' Beats Fit Pro', ' Beats Flex', ' Beats Powerbeats Pro', ' Beats Studio Buds', ' Fender Tour', ' Huawei Freebuds 4i True Wireless', ' Jabra Elite 4 Active', ' JBL Reflect Flow Pro', ' Jlab Go Air Pop', ' Motorola MOTO BUDS 085', ' Motorola Moto Buds 100', ' Realme Buds Air3 (RMA2105)']
+
+    temp = ""
+    nameList = []
+    for name in currentHeadGearName:
+        # itemName = item["Name"]
+        removeWords = ["ฟังสปอร์ต", "หูฟังไร้สาย", "หูฟังเกมมิ่ง", "หูฟังใส่ออกกำลังกาย", "หูฟัง", "หู", "รุ่น "]
+        for word in removeWords:
+            if word in name:
+                name = name.replace(word, "")
+            name = name.strip()
+        nameList.append(name)
+    
+    print(nameList)
+    print("Length: " + str(len(nameList)))
+    return JsonResponse(nameList, safe=False)
 
 
+@csrf_exempt
+def addHeadGearIHav(request):
+    # get name of all headgear from IHaveCPU
+    listOfHeadGear = webScrap.ihavecpu("headphone")
+
+    # filter only needed info and to IHaveCPU
+    temp = ""
+    ihavecpuHeadGear = []
+    for item in listOfHeadGear:
+        dataOfHeadGear = {
+            "Name": (item["name"]).strip(),
+            "Brand": item["brand"],
+            "PictureLink": item["img_url"],
+            "Detail": item["description"],
+            "Banana": "0",
+            "Ihavecpu": item["price"],
+            "RegularName": temp
+        }
+        ihavecpuHeadGear.append(dataOfHeadGear)
+    
 
 
+    # renaming for "RegularName"
+    return JsonResponse(ihavecpuHeadGear, safe=False)
 
+@csrf_exempt
+def testRenamingIHavHeadGear(request):
+    currentHeadGearName = [
+    "OPEN ACOUSTIC GAME ONE BLACK ",
+    "KRAKEN X BLACK ",
+    "HAMMERHEAD PRO V2 ",
+    "G333 BUFFY IN EAR WHITE ",
+    "G333 BUFFY IN EAR BLACK ",
+    "G435 LIGHTSPEED WIRELESS -BLACK & NEON YELLOW ",
+    "G435 LIGHTSPEED WIRELESS - OFF-WHITE & LILAC ",
+    "G435 LIGHTSPEED WIRELESS -BLUE & RASPBERRY ",
+    "X CLOUD EARBUD EARPHONES - RED ",
+    "ROG CETRA II (IN EAR) USB TPYE-C ",
+    "X98 7.1 BLACK ",
+    "G431 7.1 SURROUND SOUND ",
+    "BLACKSHARK V2 PRO ",
+    "MASTER MASTERPULSE MH630 ",
+    "G PRO X WIRELESS LIGHTSPEED ",
+    "HAMMERHEAD TRUE WIRELESS X - EARBUDS - BLACK ",
+    "EP-619 SPACER IN-EAR GAMING EARPHONES ",
+    "G PRO X GAMING BLACK - USB ",
+    "G335 BLACK ",
+    "G335 WHITE ",
+    "OPEN ACOUSTIC GAME ONE BLACK ",
+    "KRAKEN X BLACK ",
+    "HAMMERHEAD PRO V2 ",
+    "G333 BUFFY IN EAR WHITE ",
+    "G333 BUFFY IN EAR BLACK ",
+    "G435 LIGHTSPEED WIRELESS -BLACK & NEON YELLOW ",
+    "G435 LIGHTSPEED WIRELESS - OFF-WHITE & LILAC ",
+    "G435 LIGHTSPEED WIRELESS -BLUE & RASPBERRY ",
+    "X CLOUD EARBUD EARPHONES - RED ",
+    "ROG CETRA II (IN EAR) USB TPYE-C ",
+    "X98 7.1 BLACK ",
+    "G431 7.1 SURROUND SOUND ",
+    "BLACKSHARK V2 PRO ",
+    "MASTER MASTERPULSE MH630 ",
+    "G PRO X WIRELESS LIGHTSPEED ",
+    "HAMMERHEAD TRUE WIRELESS X - EARBUDS - BLACK ",
+    "EP-619 SPACER IN-EAR GAMING EARPHONES ",
+    "G PRO X GAMING BLACK - USB ",
+    "G335 BLACK ",
+    "G335 WHITE ",
+    "ROG CETRA II CORE (IN EAR) ",
+    "G633S 7.1 LIGHTSYNC BLACK ",
+    "DS502 GAMING ",
+    "G331 GAMING (2.1) ",
+    "TYPE H8 GAMING HEADSET ",
+    "VH500 Virtual 7.1 Channels Gaming "
+]
+    for name in currentHeadGearName:
+        print()
+        
+    return JsonResponse("", safe=False)
 
-
-
-
-
-
-
+    
 
 
 
