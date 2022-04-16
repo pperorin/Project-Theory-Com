@@ -18,16 +18,17 @@ urlpatterns=[
     
     # Add Keyboard to database
     url(r'^bananaKB$', views.addKBFromBanana),
-    # url(r'^iHaveCpuKB$', views.addKBFromIHaveCpu)
+    url(r'^ihavecpuKB$', views.addKBFromIHaveCpu),
 
     # Add HeadGear to database
     url(r'^bananaHeadGear$', views.addHeadGearBanana),
-    url(r'^iHaveCpuHeadGear$', views.addHeadGearIHav),
+    url(r'^ihavecpuHeadGear$', views.addHeadGearIHaveCpu),
 
     # for testing functions
-    url(r'^testRenamingBNNHeadGear$', views.testRenamingBNNHeadGear),
+    # url(r'^testRenamingBNNHeadGear$', views.testRenamingBNNHeadGear),
     url(r'^testRenamingIHaveCpuHeadGear$', views.testRenamingBNNHeadGear)
-    # url(r'^testHi',views.testHi)
+    # url(r'^testRenamingIHaveCpuKeyboard$', views.testRenamingIHaveCpuKeyboard)
+    # # url(r'^testHi',views.testHi)
 ]
 
 

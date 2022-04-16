@@ -1,4 +1,7 @@
+from concurrent.futures import BrokenExecutor
 from math import degrees
+from operator import le
+from os import remove
 from sys import set_asyncgen_hooks
 from tempfile import tempdir
 from django.views.decorators.csrf import csrf_exempt
@@ -13,13 +16,12 @@ import re
 from django.core.files.storage import default_storage
 
 # Create your views here.
-
 bananaMouse = []
 bananaKB = []
 bananaHeadGear = []
 
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
-colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"] # unuse
+colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"]
 
 @csrf_exempt
 def mouseApi(request,id=0):
@@ -182,12 +184,49 @@ def headGearApi(request, id=0):
         headGear_serializer = HeadGearSerializer(headGear,data=headGear_data)
         if headGear_serializer.is_valid():
             headGear_serializer.save()
-            return JsonResponse(f'Update {headGear_data} Successfully',safe=False)
-        return JsonResponse(f'Failed to Update {headGear_data}')
+            return JsonResponse(f'Updated Successfully',safe=False)
+        return JsonResponse(f'Failed to Update')
     elif request.method=='DELETE':
         headGear=HeadGear.objects.get(HeadGearId=id)
         headGear.delete()
-        return JsonResponse(f'Deleted {headGear} Successfully',safe=False)
+        return JsonResponse(f'Deleted Successfully',safe=False)
+
+@csrf_exempt
+def headgearAdd(obj):
+    temp = []
+    headgearInDB = HeadGear.objects.all()
+    headGear_serializer=HeadGearSerializer(headgearInDB, many=True)
+    a = obj["RegularName"]
+    for i in headGear_serializer.data:
+        temp.append(i["RegularName"])
+    if a in temp:
+        h = HeadGear.objects.get(RegularName=a)
+        hOld = HeadGearSerializer(h)
+        ## Add Price from Banana
+        if obj["Banana"] != "0" and hOld.data["Banana"] == "0":
+            obj["Ihavecpu"] = hOld.data["Ihavecpu"]
+        ## Add Price from Ihavecpu
+        elif obj["Ihavecpu"] != "0" and hOld.data["Ihavecpu"] == "0":
+            obj["Banana"] = hOld.data["Banana"]
+        ## Update Price of Banana
+        elif obj["Banana"] != "0" and hOld["Banana"] != 0:
+            obj["Ihavecpu"] = hOld.data["Ihavecpu"]
+        ## Update Price of Ihavecpu
+        elif obj["Ihavecpu"] != "0" and hOld["Ihavecpu"] != 0:
+            obj["Banana"] = hOld.data["Banana"]
+        hoS = HeadGearSerializer(h, data=obj)
+        if hoS.is_valid():
+            hoS.save()
+            return True
+        else:
+            return False
+    else:
+        headGear_data = obj
+        headGear_serializer = HeadGearSerializer(data=headGear_data)
+    if headGear_serializer.is_valid():
+        headGear_serializer.save()
+        return True
+    return False
 
 @csrf_exempt
 def SaveFile(request):
@@ -317,7 +356,7 @@ def addMouseFromIHav(request):
 def addKBFromBanana(requset):
     reg = "None"
     lis = webScrap.Banana("keyboard")
-    temp =""
+    temp = ""
     for i in lis:
         dat = {
             "Name": i["name"],
@@ -373,22 +412,125 @@ def addKBFromBanana(requset):
             return JsonResponse("Failed",safe=False)
     return JsonResponse(bananaKB,safe=False)
 
+# IHaveCPU Keyboard
+@csrf_exempt
+def addKBFromIHaveCpu(request):
+    # get all keyboard from IHaveCPU
+    lis = webScrap.ihavecpu("keyboard")
+
+    # filter only needed info and add into ihaveCpuKey
+    ihavecpuKeyboard = []
+    nameList = []
+    removeWords = ["-", "/ ", "(EN/TH)", "[TH/EN]", "[EN/TH]",  "(EN)", "TH/EN", "(RGB LED)", "(MEMBRANE) ", "GAMING ", "KEYBOARD "]
+    switchType = ["PRO ","BLUE SWITCH", "RED SWITCH", "CLICKY", "TACTILE", "NX BLUE", "NX BROWN"]
+
+    for item in lis:
+        
+        # renaming for "RugularName"
+        regularTemp = ""
+        nameTemp = ""
+        itemSerial = ""
+        itemType = ""
+        if item["name"] not in nameList:
+            # for checking duplicate
+            nameList.append(item["name"])
+
+            nameTemp = item["name"]
+            for word in removeWords:
+                nameTemp = nameTemp.replace(word, "")
+            nameTemp = nameTemp.replace("G PRO", "GPRO")
+
+            for namePart in nameTemp.split():
+                if re.findall("[0-9]+", namePart) != []:
+                    itemSerial = namePart
+                    break
+                if re.findall("STRIX", namePart) != []:
+                    itemSerial = namePart
+                    break
+                if re.findall("GPRO", namePart) != []:
+                    itemSerial = namePart
+                    break
+            
+            for word in switchType:
+                if re.findall(word, nameTemp) != []:
+                    itemType = word
+
+            regularTemp = item["brand"]
+            if itemSerial != "" or itemType != "":
+                regularTemp += " " + itemSerial
+                if itemType != "":
+                    regularTemp += " " + itemType
+            else:
+                regularTemp += " " + nameTemp
+
+            # create data format
+            dataDict = {
+                    "Name": (item["name"]).strip(),
+                    "Brand": item["brand"],
+                    "PictureLink": item["img_url"],
+                    "Detail": item["description"],
+                    "Banana": "0",
+                    "Ihavecpu": item["price"],
+                    "RegularName": regularTemp.strip()
+                    }
+            ihavecpuKeyboard.append(dataDict)
+
+        # add to database 
+        if keyAdd(dataDict) == False:
+            return JsonResponse("Failed",safe=False)
+    return JsonResponse(ihavecpuKeyboard, safe=False)
+
 # @csrf_exempt
-# def addKBFromIHaveCpu(request):
-#     iHaveCpuKB = webScrap.ihavecpu("keyboard")
-#     return JsonResponse(iHaveCpuKB, safe=False)
+# def testRenamingIHaveCpuKeyboard(request):
+#     lis = [
+#     "OUTEMU MK-61 ",
+#     "OUTEMU MK-02 MECHANICAL BLUE SWITCH ",
+#     "OUTEMU MK-03 MECHANICAL RED SWITCH ",
+#     "OUTEMU MK-04 MECHANICAL GREY BLUE SWITCH ",
+#     "XANOVA PULSAR XK400 BLUE SWITCH ",
+#     "X YDK-AK-900 GAMING KEYBOARD ",
+#     "GK-72 RGB MECHANICAL ",
+#     "OUTEMU MK-02 PRO ",
+#     "ROG STRIX SCOPE NX TKL MOONLIGHT WHITE (ROG NX BROWN)(EN/TH) ",
+#     "ROG STRIX SCOPE NX TKL (ROG NX BLUE)(EN/TH) ",
+#     "G PRO RGB MECHANICAL GAMING [GX BLUE CLICKY SWITCH] ",
+#     "X33 ALISTAR [BLUE SWITCH] BLACK ",
+#     "X33 ALISTAR [BLUE SWITCH] PURPLE / YELLOW ",
+#     "X33 ALISTAR [RED SWITCH] YELLOW / WHITE ",
+#     "CHALLENGER PRIME ",
+#     "G413 CARBON GAMING MECHANICAL ROMER-G TACTILE ",
+#     "CYNOSA LITE ESSENTIAL ",
+#     "G512 CARBON [GX BLUE CLICKY SWITCH] [TH/EN] ",
+#     "VIGOR GK30 GAMING ",
+#     "KG8702 OSIRIS ",
+#     "G213 PRODIGY (MEMBRANE) (RGB LED) (EN/TH) ",
+#     "G PRO X [GX BLUE CLICKY ] (RGB LED) (EN) ",
+#     "VIGOR GK60 MECHANICAL CHERRY RED SWITCH ",
+#     "G913 LIGHTSPEED WIRELESS RGB [GL CLICKY SWITCH] TH/EN ",
+#     "VIGOR GK50 LOW PROFILE US GAMING [EN/TH] ",
+#     "GAMING KEYBOARD ORNATA CHROMA (EN/TH) "
+#     ]
+
+#     removeWords = ["-", "/ ", "(EN/TH)", "[TH/EN]", "[EN/TH]",  "(EN)", "TH/EN" ,"(RGB LED)", "(MEMBRANE)"]
+#     for i in range(len(lis)):
+#         for word in removeWords:
+#             lis[i] = lis[i].replace(word, "")
+#         lis[i] = lis[i].replace("G PRO", "GPRO")
+
+#         lis[i] = lis[i].strip()
+#         # print(lis[i])
+#     return JsonResponse(lis, safe=False)
 
 
-# HeadGear
+# HeadGear Banana
 @csrf_exempt
 def addHeadGearBanana(request):
-    # get name of all headgear from Banana
-    listOfHeadGear = webScrap.Banana("headphone")
+    # get all headgear from Banana
+    lis = webScrap.Banana("headphone")
 
     # filter only needed info and add to bananaHeadGear
-    temp = ""
-    for item in listOfHeadGear:
-        dataOfHeadGear = {
+    for item in lis:
+        dataDict = {
             "Name": item["name"],
             "Brand": item["brand"],
             "Color": item["feature"]["Color"],
@@ -396,21 +538,21 @@ def addHeadGearBanana(request):
             "Ihavecpu": "0",
             "PictureLink": item["img_url"],
             "Detail": item["description"],
-            "RegularName": temp
+            "RegularName": ""
         }
-        bananaHeadGear.append(dataOfHeadGear)
+        bananaHeadGear.append(dataDict)
 
     # renaming for "RugularName"
-    nameList = []
+    # nameList = []
     for item in bananaHeadGear:
         itemName = item["Name"]
         removeWords = ["ฟังสปอร์ต", "หูฟังไร้สาย", "หูฟังเกมมิ่ง", "หูฟังใส่ออกกำลังกาย", "หูฟัง", "หู", "รุ่น "]
         for word in removeWords:
             if word in itemName:
                 itemName = itemName.replace(word, "")
-        nameList.append(itemName)
+        # nameList.append(itemName)
 
-    print(nameList)
+    # print(nameList)
     return JsonResponse(bananaHeadGear, safe=False)
 
 @csrf_exempt
@@ -434,54 +576,53 @@ def testRenamingBNNHeadGear(request):
     return JsonResponse(nameList, safe=False)
 
 
+# HeadGear IHaveCPU
 @csrf_exempt
-def addHeadGearIHav(request):
-    # get name of all headgear from IHaveCPU
-    listOfHeadGear = webScrap.ihavecpu("headphone")
+def addHeadGearIHaveCpu(request):
+    # get all headgear from IHaveCPU
+    lis = webScrap.ihavecpu("headphone")
 
-    # filter only needed info and to IHaveCPU
-    temp = ""
-    ihavecpuHeadGear = []
-    for item in listOfHeadGear:
-        dataOfHeadGear = {
-            "Name": (item["name"]).strip(),
-            "Brand": item["brand"],
-            "PictureLink": item["img_url"],
-            "Detail": item["description"],
-            "Banana": "0",
-            "Ihavecpu": item["price"],
-            "RegularName": temp
-        }
-        ihavecpuHeadGear.append(dataOfHeadGear)
+    # filter only needed info and to ihavecpuHeadGear
+    removeWords = ["-", "BUFFY","LIGHTSPEED", "EARBUDS", "EARPHONES", "WIRELESS", "WIRELESS X", "(2.1)", "Virtual", "7.1", "(IN EAR)", "IN EAR", "INEAR", "USB", "SPACER", "OPEN ACOUSTIC ", 
+    "TPYEC", "EARBUD", "GAMING", "Gaming", "MASTERPULSE", "EARPHONE", "& LILAC", "& RASPBERRY", "& NEON YELLOW", "LIGHTSYNC", "HEADSET", "Channels", "TRUE", "SURROUND", "SOUND"]
+    colors = ["BLACK", "WHITE", "BLUE", "RED", "OFFWHITE"]
+    # ihavecpuHeadGear = []
+    nameList = []
+    nameTemp = ""
     
+    for item in lis:
+        # renaming for "RegularName"
+        regularTemp = ""
+        nameTemp = item["name"]
 
+        if item["name"] not in nameList:
+            nameList.append(item["name"])
+            for word in removeWords:
+                nameTemp = nameTemp.replace(word, "")
+                nameTemp = nameTemp.replace("  ", " ")
+            nameTemp = nameTemp.replace("G PRO", "GPRO")
 
-    # renaming for "RegularName"
-    return JsonResponse(ihavecpuHeadGear, safe=False)
+            regularTemp = (item["brand"] + " " + nameTemp).strip()
+            dataDict = {
+                "Name": (item["name"]).strip(),
+                "Brand": item["brand"],
+                "PictureLink": item["img_url"],
+                "Detail": item["description"],
+                "Banana": "0",
+                "Ihavecpu": item["price"],
+                "RegularName": regularTemp
+            }
+            # ihavecpuHeadGear.append(dataDict)
+    
+        # add to database
+        if headgearAdd(dataDict) == False:
+            return JsonResponse("Failed", safe=False)
 
-@csrf_exempt
-def testRenamingIHavHeadGear(request):
-    currentHeadGearName = [
-    "OPEN ACOUSTIC GAME ONE BLACK ",
-    "KRAKEN X BLACK ",
-    "HAMMERHEAD PRO V2 ",
-    "G333 BUFFY IN EAR WHITE ",
-    "G333 BUFFY IN EAR BLACK ",
-    "G435 LIGHTSPEED WIRELESS -BLACK & NEON YELLOW ",
-    "G435 LIGHTSPEED WIRELESS - OFF-WHITE & LILAC ",
-    "G435 LIGHTSPEED WIRELESS -BLUE & RASPBERRY ",
-    "X CLOUD EARBUD EARPHONES - RED ",
-    "ROG CETRA II (IN EAR) USB TPYE-C ",
-    "X98 7.1 BLACK ",
-    "G431 7.1 SURROUND SOUND ",
-    "BLACKSHARK V2 PRO ",
-    "MASTER MASTERPULSE MH630 ",
-    "G PRO X WIRELESS LIGHTSPEED ",
-    "HAMMERHEAD TRUE WIRELESS X - EARBUDS - BLACK ",
-    "EP-619 SPACER IN-EAR GAMING EARPHONES ",
-    "G PRO X GAMING BLACK - USB ",
-    "G335 BLACK ",
-    "G335 WHITE ",
+    return JsonResponse("Complete", safe=False)
+
+# @csrf_exempt
+# def testRenamingIHavHeadGear(request):
+#     currentHeadGearName = [
     "OPEN ACOUSTIC GAME ONE BLACK ",
     "KRAKEN X BLACK ",
     "HAMMERHEAD PRO V2 ",
@@ -508,13 +649,8 @@ def testRenamingIHavHeadGear(request):
     "G331 GAMING (2.1) ",
     "TYPE H8 GAMING HEADSET ",
     "VH500 Virtual 7.1 Channels Gaming "
-]
-    for name in currentHeadGearName:
-        print()
-        
-    return JsonResponse("", safe=False)
-
-    
+# ]
+#     return JsonResponse("", safe=False)
 
 
 
