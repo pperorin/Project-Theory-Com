@@ -1,19 +1,15 @@
-from concurrent.futures import BrokenExecutor
-from math import degrees
-from operator import le
-from os import remove
-from sys import set_asyncgen_hooks
-from tempfile import tempdir
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from django.http.response import JsonResponse
-import requests
-from Webapp.models import Mouse,Keyboard,HeadGear
-from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
-from Web_Scraping import views as webScrap
-import re
-
 from django.core.files.storage import default_storage
+from django.http.response import JsonResponse
+
+from rest_framework.parsers import JSONParser
+
+from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
+from Webapp.models import Mouse,Keyboard,HeadGear
+from Web_Scraping import views as webScrap
+
+import re
+import requests
 
 # Create your views here.
 bananaMouse = []
@@ -247,8 +243,7 @@ def catchTest(dataT):
     else:
         return False
 
-
-
+# add Banana mouse
 @csrf_exempt
 def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
@@ -303,6 +298,7 @@ def addMouseFromBanana(request):
             JsonResponse("Failed To Add",safe=False)
     return JsonResponse("Complete",safe=False)
 
+# add IhaveCPU mouse
 @csrf_exempt
 def addMouseFromIHav(request):
     colLis = ["BLACK","WHITE","GREY","PINK"]
@@ -558,7 +554,7 @@ def addHeadGearBanana(request):
 
         # add to database
         if headgearAdd(dataDict) == False:
-            return JsonResponse("Failed", safe=False)
+            print("Cannot add --> ", item["name"])
 
     return JsonResponse(bananaHeadGear, safe=False)
 
@@ -592,8 +588,8 @@ def addHeadGearIHaveCpu(request):
     # filter only needed info and to ihavecpuHeadGear
     removeWords = ["-", "BUFFY","LIGHTSPEED", "EARBUDS", "EARPHONES", "WIRELESS", "WIRELESS X", "(2.1)", "Virtual", "7.1", "(IN EAR)", "IN EAR", "INEAR", "USB", "SPACER", "OPEN ACOUSTIC ", 
     "TPYEC", "EARBUD", "GAMING", "Gaming", "MASTERPULSE", "EARPHONE", "& LILAC", "& RASPBERRY", "& NEON YELLOW", "LIGHTSYNC", "HEADSET", "Channels", "TRUE", "SURROUND", "SOUND"]
-    colors = ["BLACK", "WHITE", "BLUE", "RED", "OFFWHITE"]
-    # ihavecpuHeadGear = []
+    # colors = ["BLACK", "WHITE", "BLUE", "RED", "OFFWHITE"]
+    ihavecpuHeadGear = []
     nameList = []
     nameTemp = ""
     
@@ -601,6 +597,10 @@ def addHeadGearIHaveCpu(request):
         # renaming for "RegularName"
         regularTemp = ""
         nameTemp = item["name"]
+        
+        if item["name"] == "VH500 Virtual 7.1 Channels Gaming ":
+            print("delete --> ", item["name"])
+            continue
 
         if item["name"] not in nameList:
             nameList.append(item["name"])
@@ -611,7 +611,7 @@ def addHeadGearIHaveCpu(request):
 
             regularTemp = (item["brand"] + " " + nameTemp).strip()
             dataDict = {
-                "Name": (item["name"]).strip(),
+                "Name": (item["name"]),
                 "Brand": item["brand"],
                 "PictureLink": item["img_url"],
                 "Detail": item["description"],
@@ -619,13 +619,13 @@ def addHeadGearIHaveCpu(request):
                 "Ihavecpu": item["price"],
                 "RegularName": regularTemp
             }
-            # ihavecpuHeadGear.append(dataDict)
+            ihavecpuHeadGear.append(dataDict)
     
         # add to database
         if headgearAdd(dataDict) == False:
-            return JsonResponse("Failed", safe=False)
+            print("Cannot add --> ", item["name"])
 
-    return JsonResponse("Complete", safe=False)
+    return JsonResponse(ihavecpuHeadGear, safe=False)
 
 # @csrf_exempt
 # def testRenamingIHavHeadGear(request):
@@ -658,7 +658,6 @@ def addHeadGearIHaveCpu(request):
     "VH500 Virtual 7.1 Channels Gaming "
 # ]
 #     return JsonResponse("", safe=False)
-
 
 
 # def testHi(requset):

@@ -1,4 +1,3 @@
-from re import U
 from django.urls import re_path as url
 from Webapp import views
 
