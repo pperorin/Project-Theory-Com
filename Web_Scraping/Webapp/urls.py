@@ -22,12 +22,12 @@ urlpatterns=[
 
     # Add HeadGear to database
     url(r'^bananaHeadGear$', views.addHeadGearBanana),
-    url(r'^ihavecpuHeadGear$', views.addHeadGearIHaveCpu),
+    url(r'^ihavecpuHeadGear$', views.addHeadGearIHaveCpu)
 
     # for testing functions
-    # url(r'^testRenamingBNNHeadGear$', views.testRenamingBNNHeadGear),
-    url(r'^testRenamingIHaveCpuHeadGear$', views.testRenamingBNNHeadGear)
     # url(r'^testRenamingIHaveCpuKeyboard$', views.testRenamingIHaveCpuKeyboard)
+    # url(r'^testRenamingBNNHeadGear$', views.testRenamingBNNHeadGear),
+    # url(r'^testRenamingIHaveCpuHeadGear$', views.testRenamingIHaveCpuHeadGear)
     # # url(r'^testHi',views.testHi)
 ]
 
