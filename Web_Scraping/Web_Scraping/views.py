@@ -25,8 +25,7 @@ def helloFromWebScr(request):
     # return JsonResponse("Hello", safe=False)
     return JsonResponse(Banana("headphone"), safe=False)
 
-def hellofromIhaveCPU(request):
-    return JsonResponse(ihavecpu("headphone"), safe=False)
+
 
 @csrf_exempt
 def throwTest(request):

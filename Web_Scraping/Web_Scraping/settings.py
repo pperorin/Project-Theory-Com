@@ -23,9 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-na=1x+l6ckj3adqu6%*o0kuco#s-e#+9^_93th15rguj_0vs0_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+############################## Change To False when want to test Deploy ####################################
+DEBUG = True
+###########################################################################################################
+
+
+ALLOWED_HOSTS = ['theorybackend.herokuapp.com']
 
 
 # Application definition
@@ -127,6 +132,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

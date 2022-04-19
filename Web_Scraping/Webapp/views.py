@@ -18,6 +18,10 @@ bananaKB = []
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"]
 
+def hellofromIhaveCPU(request):
+    return JsonResponse("Hi there", safe=False)
+
+
 @csrf_exempt
 def mouseApi(request,id=0):
     if request.method=='GET':
