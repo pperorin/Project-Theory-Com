@@ -17,6 +17,7 @@ bananaKB = []
 
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"]
+keyBoardColor = []
 
 def hellofromIhaveCPU(request):
     return JsonResponse("Hi there", safe=False)
@@ -53,42 +54,53 @@ def mouseApi(request,id=0):
         mouse.delete()
         return JsonResponse("Deleted Successfully",safe=False)
 
+
+def priceMap(merchandiseType, regularList, merchandise):
+    temp = []
+    for i in regularList.data:
+        temp.append(i["RegularName"])
+    if merchandise["RegularName"] in temp:
+        if merchandiseType == 1:
+            getData = Mouse.objects.get(RegularName=merchandise["RegularName"])
+            oldData = MouseSerializer(getData)
+        elif merchandiseType == 2:
+            getData = Keyboard.objects.get(RegularName=merchandise["RegularName"])
+            oldData = KeyboardSerializer(getData)
+        elif merchandiseType == 3:
+            getData = HeadGear.objects.get(RegularName=merchandise["RegularName"])
+            oldData = KeyboardSerializer(getData)
+        if merchandise["Ihavecpu"] != "0":
+            merchandise["Banana"] = oldData.data["Banana"]
+        elif merchandise["Banana"] != "0":
+            merchandise["Ihavecpu"] = oldData.data["Ihavecpu"]
+        if merchandiseType == 1:
+            newData = MouseSerializer(getData, data = merchandise)
+        elif merchandiseType == 2:
+            newData = KeyboardSerializer(getData, data = merchandise)
+        elif merchandiseType == 3:
+            newData = HeadGearSerializer(getData, data = merchandise)
+        return newData
+    else:
+        if merchandiseType == 1:
+            newData = MouseSerializer(data = merchandise)
+        elif merchandiseType == 2:
+            newData = KeyboardSerializer(data = merchandise)
+        elif merchandiseType == 3:
+            newData = HeadGearSerializer(data = merchandise)
+        return newData
+        
+
 @csrf_exempt
 def mouseAdd(obj):
-    temp = []
     mouseInDB = Mouse.objects.all()
     mouse_serializer=MouseSerializer(mouseInDB,many=True)
-    a = obj["RegularName"]
-    for i in mouse_serializer.data:
-        temp.append(i["RegularName"])
-    if a in temp:
-        m = Mouse.objects.get(RegularName=a)
-        mOld = MouseSerializer(m)
-        ## Add Price from Banana
-        if obj["Banana"] != "0" and mOld.data["Banana"] == "0":
-            obj["Ihavecpu"] = mOld.data["Ihavecpu"]
-        ## Add Price from Ihavecpu
-        elif obj["Ihavecpu"] != "0" and mOld.data["Ihavecpu"] == "0":
-            obj["Banana"] = mOld.data["Banana"]
-        ## Update Price of Banana
-        elif obj["Banana"] != "0" and mOld["Banana"] != 0:
-            obj["Ihavecpu"] = mOld.data["Ihavecpu"]
-        ## Update Price of Ihavecpu
-        elif obj["Ihavecpu"] != "0" and mOld["Ihavecpu"] != 0:
-            obj["Banana"] = mOld.data["Banana"]
-        moS = MouseSerializer(m,data=obj)
-        if moS.is_valid():
-            moS.save()
-            return True
-        else:
-            return False
-    else:
-        mouse_data = obj
-        mouse_serializer = MouseSerializer(data=mouse_data)
-    if mouse_serializer.is_valid():
-        mouse_serializer.save()
+    newMouseData = priceMap(1, mouse_serializer, obj)
+    if newMouseData.is_valid():
+        newMouseData.save()
         return True
-    return False
+    else:
+        return False
+    
 
 
 @csrf_exempt
@@ -124,40 +136,14 @@ def keyboardApi(request,id=0):
 
 @csrf_exempt
 def keyAdd(obj):
-    temp = []
     kbInDB = Keyboard.objects.all()
     keyboard_serializer=KeyboardSerializer(kbInDB,many=True)
-    a = obj["RegularName"]
-    for i in keyboard_serializer.data:
-        temp.append(i["RegularName"])
-    if a in temp:
-        k = Keyboard.objects.get(RegularName=a)
-        kOld = KeyboardSerializer(k)
-        ## Add Price from Banana
-        if obj["Banana"] != "0" and kOld.data["Banana"] == "0":
-            obj["Ihavecpu"] = kOld.data["Ihavecpu"]
-        ## Add Price from Ihavecpu
-        elif obj["Ihavecpu"] != "0" and kOld.data["Ihavecpu"] == "0":
-            obj["Banana"] = kOld.data["Banana"]
-        ## Update Price of Banana
-        elif obj["Banana"] != "0" and kOld["Banana"] != 0:
-            obj["Ihavecpu"] = kOld.data["Ihavecpu"]
-        ## Update Price of Ihavecpu
-        elif obj["Ihavecpu"] != "0" and kOld["Ihavecpu"] != 0:
-            obj["Banana"] = kOld.data["Banana"]
-        koS = KeyboardSerializer(k,data=obj)
-        if koS.is_valid():
-            koS.save()
-            return True
-        else:
-            return False
-    else:
-        keyboard_data = obj
-        keyboard_serializer=KeyboardSerializer(data=keyboard_data)
-    if keyboard_serializer.is_valid():
-        keyboard_serializer.save()
+    newKeyBoardData = priceMap(2, keyboard_serializer, obj)
+    if newKeyBoardData.is_valid():
+        newKeyBoardData.save()
         return True
-    return False
+    else:
+        return False
 
 @csrf_exempt
 def headGearApi(request, id=0):
@@ -192,40 +178,14 @@ def headGearApi(request, id=0):
 
 @csrf_exempt
 def headgearAdd(obj):
-    temp = []
     headgearInDB = HeadGear.objects.all()
     headGear_serializer=HeadGearSerializer(headgearInDB, many=True)
-    a = obj["RegularName"]
-    for i in headGear_serializer.data:
-        temp.append(i["RegularName"])
-    if a in temp:
-        h = HeadGear.objects.get(RegularName=a)
-        hOld = HeadGearSerializer(h)
-        ## Add Price from Banana
-        if obj["Banana"] != "0" and hOld.data["Banana"] == "0":
-            obj["Ihavecpu"] = hOld.data["Ihavecpu"]
-        ## Add Price from Ihavecpu
-        elif obj["Ihavecpu"] != "0" and hOld.data["Ihavecpu"] == "0":
-            obj["Banana"] = hOld.data["Banana"]
-        ## Update Price of Banana
-        elif obj["Banana"] != "0" and hOld["Banana"] != 0:
-            obj["Ihavecpu"] = hOld.data["Ihavecpu"]
-        ## Update Price of Ihavecpu
-        elif obj["Ihavecpu"] != "0" and hOld["Ihavecpu"] != 0:
-            obj["Banana"] = hOld.data["Banana"]
-        hoS = HeadGearSerializer(h, data=obj)
-        if hoS.is_valid():
-            hoS.save()
-            return True
-        else:
-            return False
-    else:
-        headGear_data = obj
-        headGear_serializer = HeadGearSerializer(data=headGear_data)
-    if headGear_serializer.is_valid():
-        headGear_serializer.save()
+    newHeadGearData = priceMap(3, headGear_serializer, obj)
+    if newHeadGearData.is_valid():
+        newHeadGearData.save()
         return True
-    return False
+    else:
+        return False
 
 @csrf_exempt
 def SaveFile(request):
@@ -300,12 +260,12 @@ def addMouseFromBanana(request):
             i["RegularName"] = getupstr
         if mouseAdd(i) == False:
             JsonResponse("Failed To Add",safe=False)
-    return JsonResponse("Complete",safe=False)
+    return JsonResponse(bananaMouse,safe=False)
 
 # add IhaveCPU mouse
 @csrf_exempt
 def addMouseFromIHav(request):
-    colLis = ["BLACK","WHITE","GREY","PINK"]
+    colLis = ["BLACK","WHITE","GREY","PINK","LILAC","BLUE"]
     lis = webScrap.ihavecpu("mouse")
     col = "None"
     temp = ""
@@ -407,8 +367,13 @@ def addKBFromBanana(requset):
             i["RegularName"] = temp
         temp = ""
         reg = "None"
+        if i["Color"] in keyBoardColor:
+            pass
+        else:
+            keyBoardColor.append(i["Color"])
         if keyAdd(i) == False:
             return JsonResponse("Failed",safe=False)
+    
     return JsonResponse(bananaKB,safe=False)
 
 # IHaveCPU Keyboard
@@ -628,7 +593,6 @@ def addHeadGearIHaveCpu(request):
         # add to database
         if headgearAdd(dataDict) == False:
             print("Cannot add --> ", item["name"])
-
     return JsonResponse(ihavecpuHeadGear, safe=False)
 
 # @csrf_exempt
