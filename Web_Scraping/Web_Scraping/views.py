@@ -89,7 +89,7 @@ def Banana(device):
     for numPage in range(1, numberOfPage+1):
         print("Now page is: ", numPage)
         # res = requests.get(url+str(numPage))
-        res = requests.get(url+str(5))
+        res = requests.get(url+str(numPage))
         # res = requests.get(url[input]+str(1))
         res.encoding = "utf-8"
         soup = BeautifulSoup(res.text, 'html.parser')
