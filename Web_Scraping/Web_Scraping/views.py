@@ -59,20 +59,23 @@ def Banana(device):
         soup = BeautifulSoup(res.text, 'html.parser')
         table = soup.find(
             "table", {"class": "product-detail-specification-table table -striped"})
-        info = table.find_all("td")
-        for j in range(0, len(info), 2):
-            feature[info[j].text[1:-1]] = info[j+1].text[1:-1]
-            # print(info[j].text[1:-1],info[j+1].text[1:-1])
-        return feature
+        if table != None: 
+            info = table.find_all("td")
+            for j in range(0, len(info), 2):
+                feature[info[j].text[1:-1]] = info[j+1].text[1:-1]
+                # print(info[j].text[1:-1],info[j+1].text[1:-1])
+            return feature
+        else:
+            return "ไม่มีข้อมูล"
 
     if device == "mouse":
-        url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/mouse-1?in_stock=true&page="
+        url = "https://www.bnn.in.th/th/p/gaming-gear/pc-gaming-accessories/gaming-mouse?page="
         # url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/mouse-1?page="
     elif(device == "keyboard"):
-        url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/keyboard-and-numpad?in_stock=true&page="
+        url = "https://www.bnn.in.th/th/p/gaming-gear/pc-gaming-accessories/gaming-keyboard?page="
         # url = "https://www.bnn.in.th/th/p/it-accessories/mouse-and-keyboards/keyboard-and-numpad?page="
     elif(device == "headphone"):
-        url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?in_stock=true&page="
+        url = "https://www.bnn.in.th/th/p/gaming-gear/pc-gaming-accessories/gaming-headphone?page="
         # url = "https://www.bnn.in.th/th/p/home-entertainment/headphone?page="
 
     # find the number of pages
@@ -85,7 +88,8 @@ def Banana(device):
     datas = []
     for numPage in range(1, numberOfPage+1):
         print("Now page is: ", numPage)
-        res = requests.get(url+str(numPage))
+        # res = requests.get(url+str(numPage))
+        res = requests.get(url+str(5))
         # res = requests.get(url[input]+str(1))
         res.encoding = "utf-8"
         soup = BeautifulSoup(res.text, 'html.parser')
