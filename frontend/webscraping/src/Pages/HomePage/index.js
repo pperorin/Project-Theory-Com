@@ -49,33 +49,22 @@ const HomePage = () => {
           Filter panel
         </div>
         <div className="col-span-3">
-          <div className="grid grid-cols-3 gap-4">
-            
+          
+        <div className="grid grid-cols-3 gap-4">
               
                 {loading ? (
-                  <p>loading...</p>
-                ) : (
+                  
+                 
+                  <img className=" " src="https://cdn.dribbble.com/users/214929/screenshots/3154930/cat-jumping-aniamtion---gif.gif" alt="this slowpoke moves"  width="400" />
+                  
+                )
+              
+                : (
                   productcard.map((product) => {
                     return <ProductCard product={product} />;
                   })
                 )}
              
-              {/* <div>
-                        {loading&&loading2 ? (
-                            <p>loading...</p>
-                        ) : (
-                            
-                            productcard2.map((product2)=> {
-                             return <ProductCard  product2={product2}  />;
-                            })
-                           
-                            
-                            
-                            
-                        )}
-                        
-                        
-                        </div> */}
             </div>
          
         </div>
