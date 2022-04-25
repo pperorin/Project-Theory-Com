@@ -144,16 +144,10 @@ def ihavecpu(device):
     res.encoding = "utf-8"
     soup = BeautifulSoup(res.text, 'html.parser')
     page = soup.find_all("div", {"class": "numberBox"})
-    if page == []:
-        numberOfPage = 1
-    else:
-        numberOfPage = int(page[-1].text)
-
     datas = []
-
-    for numPage in range(numberOfPage + 1):
-        print("Now page is: ", numPage)
-        res = requests.get(url+str(numPage))
+    if page == []:
+        print("1 Page Case")
+        res = requests.get(url+str(1))
         soup = BeautifulSoup(res.text, 'html.parser')
 
         allDevice = soup.find(
@@ -180,5 +174,37 @@ def ihavecpu(device):
                 "description": getDescription(link)
             }
             datas.append(obj)
-    return datas
+        return datas
+    else:
+        numberOfPage = int(page[-1].text)
+        for numPage in range(1,numberOfPage + 1):
+            print("Now page is: ", numPage)
+            res = requests.get(url+str(numPage))
+            soup = BeautifulSoup(res.text, 'html.parser')
+
+            allDevice = soup.find(
+                "div", {"class": "productsArea tsk-dataview thumbnailArea size-250r frame-000"})
+            device = allDevice.find_all(
+                "div", {"class": "productArea productItem"})
+            for i in range(len(device)):
+                name = device[i].find("a", {"class": "gadgetThumbnail"}).get(
+                    "title").split(" ")
+                brand = name[1]
+                realname = ""
+                for j in range(2, len(name)):
+                    realname += name[j] + " "
+                link = device[i].find(
+                    "a", {"class": "gadgetThumbnail"}).get("href")
+                price = device[i].find(
+                    "div", {"class": "product_price has_currency_unit"}).text
+                image_url = device[i].find("img").get("data-src")
+                obj = {
+                    "name": realname,
+                    "brand": brand,
+                    "price": price[:-7],
+                    "img_url": image_url,
+                    "description": getDescription(link)
+                }
+                datas.append(obj)
+        return datas
     
