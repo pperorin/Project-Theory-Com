@@ -1,27 +1,42 @@
 import { useNavigate } from "react-router-dom";
 
-const ProductCard = () => {
+const ProductCard = ({product}) => {
+    
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate("/stuffinfo/name");
+        if(product.KeyboardId !== undefined){
+        navigate(`/keyboard/${product.KeyboardId}`);
+        }
+        else if(product.HeadGearId !== undefined){
+            navigate(`/headgear/${product.HeadGearId}`);
+            }
     }
-    
+    if(product.Banana === 0){
+        var cost = product.Ihavecpu
+    }else{
+        var cost = product.Banana
+    }
+
     return (
+        <>
+        
         <div className="max-w-sm rounded overflow-hidden shadow-lg hover:cursor-pointer" onClick={handleClick}>
-            <img
-                className="object-cover h-48 w-full"
-                src="https://www.jib.co.th/img_master/product/original/2020100508552442984_1.png"
+            <div>
+            <div className=""><img
+                className=" h-40 w-full object-contain pt-5"
+                src={product.PictureLink}
                 alt="Sunset in the mountains"
             />
+            </div>
             <div className="px-6">
                 <div className="text-xl mb-10">
-                    KEYBOARD (คีย์บอร์ด) HyperX ALLOY ORIGINS (HyperX BLUE SWITCH) (RGB LED) (EN/TH)
+                    {product.RegularName}
                 </div>
-                <p className="text-gray-700 text-xl font-bold">ราคา 3,290 บาท</p>
+                <p className="text-gray-700 text-xl font-bold">{cost+" บาท"}</p>
             </div>
             <div className="px-6 pt-4 pb-2">
                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                    #photography
+                    {"#"+ product.Brand}
                 </span>
                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
                     #travel
@@ -30,7 +45,13 @@ const ProductCard = () => {
                     #winter
                 </span>
             </div>
+            </div>
+            
+           
+            
         </div>
+        
+        </>
     );
 };
 

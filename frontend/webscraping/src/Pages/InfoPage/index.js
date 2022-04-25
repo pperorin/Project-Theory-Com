@@ -1,6 +1,36 @@
+import { useState } from 'react';
 import { PageLayout } from '../../components';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-function stuffinfo() {
+
+const Stuffinfo=()=> {
+    const {id}= useParams();
+    console.log(id)
+    const [loading, setLoading] = useState(false);
+    const [info,setInfo]=useState();
+    useEffect(() => {
+        const getdata = async () => {
+          try {
+            setLoading(true);
+            const data = await axios.get(
+                "http://127.0.0.1:8000/headgear/"+id
+            ); 
+            setInfo(data);
+            console.log(info)
+            // setProductcard(keyboard=>[...keyboard,data2.data])
+            // setProductcard2(data2.data);
+          } catch (err) {
+            // toast.error(err.response.data.messsage);
+          }
+          setLoading(false);
+        };
+        
+        getdata();
+        
+      }, []);
+    
     return (
         <PageLayout>
             <div className="flex flex-col w-full h-full justify-center">
@@ -46,4 +76,4 @@ function stuffinfo() {
         </PageLayout>
     );
 }
-export default stuffinfo;
+export default Stuffinfo;
