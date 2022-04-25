@@ -64,7 +64,9 @@ def Banana(device):
             for j in range(0, len(info), 2):
                 feature[info[j].text[1:-1]] = info[j+1].text[1:-1]
                 # print(info[j].text[1:-1],info[j+1].text[1:-1])
-            return feature
+            if feature:
+                return feature
+            return "ไม่มีข้อมูล"
         else:
             return "ไม่มีข้อมูล"
 
