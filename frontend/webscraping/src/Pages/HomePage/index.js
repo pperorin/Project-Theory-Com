@@ -78,7 +78,7 @@ const HomePage = () => {
             <div className="flex flex-row justify-center">
               <svg
                 role="status"
-                class="h-8 w-8 animate-spin mr-2 text-gray-200 dark:text-gray-600 fill-blue-600"
+                className="h-8 w-8 animate-spin mr-2 text-gray-200 dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
