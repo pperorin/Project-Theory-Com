@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 
 # Create your models here.
@@ -10,6 +11,7 @@ class Mouse(models.Model):
     Detail = models.CharField(max_length=20000,default="ไม่มีข้อมูล")
     Banana = models.CharField(max_length=500,default="0")
     Ihavecpu = models.CharField(max_length=500,default="0")
+    Type = models.CharField(max_length=10,default="Mouse")
     RegularName = models.CharField(max_length=500,blank=True)
 
 class Keyboard(models.Model):
@@ -20,6 +22,7 @@ class Keyboard(models.Model):
     Detail = models.CharField(max_length=20000,default="ไม่มีข้อมูล")
     Banana = models.CharField(max_length=500,default="0")
     Ihavecpu = models.CharField(max_length=500,default="0")
+    Type = models.CharField(max_length=10,default="Keyboard")
     RegularName = models.CharField(max_length=500,blank=True)
 
 class HeadGear(models.Model):
@@ -30,4 +33,5 @@ class HeadGear(models.Model):
     Detail = models.CharField(max_length=30000,default="ไม่มีข้อมูล")
     Banana = models.CharField(max_length=500,default="0")
     Ihavecpu = models.CharField(max_length=500,default="0")
+    Type = models.CharField(max_length=10,default="HeadGear")
     RegularName = models.CharField(max_length=500,blank=True)

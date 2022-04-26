@@ -213,16 +213,28 @@ def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
     temp =""
     for i in lis:
-        dat = {
-            "Name": i["name"],
-            "Brand": i["brand"],
-            "PictureLink": i["img_url"],
-            "Detail": i["description"],
-            "Banana": i["bananaPrice"],
-            "Ihavecpu": "0",
-            "RegularName": temp, 
-            "Color": i["feature"]["Color"]
-        }
+        if i["feature"]:
+            dat = {
+                "Name": i["name"],
+                "Brand": i["brand"],
+                "PictureLink": i["img_url"],
+                "Detail": i["description"],
+                "Banana": i["bananaPrice"],
+                "Ihavecpu": "0",
+                "RegularName": temp, 
+                "Color": i["feature"]["Color"]
+            }
+        else:
+            dat = {
+                "Name": i["name"],
+                "Brand": i["brand"],
+                "PictureLink": i["img_url"],
+                "Detail": i["description"],
+                "Banana": i["bananaPrice"],
+                "Ihavecpu": "0",
+                "RegularName": temp, 
+                "Color": "None"
+            }
         if dat["Name"] in notGoodName:
             pass
         else:
@@ -251,7 +263,10 @@ def addMouseFromBanana(request):
             x = re.findall("[0-9]+",j)
             if x != []:
                 isAdded = True
-                strt = c + " " + j + " " + col
+                if col != "None":
+                    strt = c + " " + j + " " + col
+                else:
+                    strt = c + " " + j
                 strup = strt.upper()
                 i["RegularName"] = strup
         if isAdded == False:
