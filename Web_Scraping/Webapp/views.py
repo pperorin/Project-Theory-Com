@@ -1,3 +1,6 @@
+from os import remove
+from sys import set_asyncgen_hooks
+from unicodedata import name
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.http.response import JsonResponse
@@ -13,7 +16,6 @@ import requests
 
 # Create your views here.
 bananaMouse = []
-bananaKB = []
 
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"]
@@ -329,70 +331,288 @@ def addMouseFromIHav(request):
 
 ################################ add Keyboard ##########################
 
+# @csrf_exempt
+# def addKBFromBanana(requset):
+#     reg = "None"
+#     lis = webScrap.Banana("keyboard")
+#     temp = ""
+#     for i in lis:
+#         dat = {
+#             "Name": i["name"],
+#             "Brand": i["brand"],
+#             "PictureLink": i["img_url"],
+#             "Detail": i["description"],
+#             "Banana": i["bananaPrice"],
+#             "Ihavecpu": "0",
+#             "RegularName": temp, 
+#             "Color": i["feature"]["Color"]
+#         }
+#         bananaKB.append(dat)
+
+#     for i in bananaKB:
+#         a = i["Name"]
+#         a = a.replace("(Red Switch)",'Red Switch')
+#         a = a.replace("(Blue Switch)",'Blue Switch')
+#         lis=[]
+#         for m in a.split():
+#             lis.append(m)
+#         for j in lis:
+#             if "(" in j:
+#                 lis.pop(lis.index(j))
+#             elif "คีย์บอร์ดไร้สาย" in j:
+#                 lis.pop(lis.index(j))
+#             elif "คีย์บอร์ด" in j:
+#                 lis.pop(lis.index(j))
+#         a = " ".join(lis)
+#         a = a.replace("-",'')
+#         a = a.replace("/",' ')
+#         a = a.replace("EN",'')
+#         a = a.replace("TH",'')
+#         a = a.replace("EO",'')
+#         a = a.replace("G PRO",'GPRO')
+#         i["Name"] = a
+#         a = a.split()
+
+#         for j in a:
+#             x = re.findall("[0-9]+",j)
+#             if x != []:
+#                 reg = j
+#         if reg == "None":
+#             temp = ' '.join(a)
+#             temp = temp.upper()
+#             i["RegularName"] = temp
+#         else:
+#             temp = i["Brand"] + " " + reg + " " + i["Color"]
+#             temp = temp.upper()
+#             i["RegularName"] = temp
+#         temp = ""
+#         reg = "None"
+#         if i["Color"] in keyBoardColor:
+#             pass
+#         else:
+#             keyBoardColor.append(i["Color"])
+#         if keyAdd(i) == False:
+#             return JsonResponse("Failed",safe=False)
+    
+#     return JsonResponse(bananaKB,safe=False)
+
 @csrf_exempt
-def addKBFromBanana(requset):
-    reg = "None"
+def addKBFromBanana(request):
+    # get all keyboard from Banana
     lis = webScrap.Banana("keyboard")
-    temp = ""
-    for i in lis:
+
+    # lisName = list()
+    bananaKB = list()
+    removeWords = [" Gaming Keyboard Mechanical", " Gaming Keyboard", " Mechanical", " Gateron", " (Red Switch)", " (Hot-swappable)", " (Optical SW)", " Mini RGB", " RGB", "."]
+
+    
+    for item in lis:
+
+        itemSerial = ""
+        regularTemp = ""
+        nameTemp = item["name"]
+
+        # Renaming Item
+        for removeWord in removeWords:
+            nameTemp = nameTemp.replace(removeWord, "")
+        nameTemp = nameTemp.replace("G Pro X", "GPROX")
+        nameTemp = nameTemp.replace("G Pro", "GPRO")
+
+        for namePart in nameTemp.split():
+            if (re.findall("[0-9]+", namePart)) != []:
+                if len(namePart) <= 2:
+                    continue
+                itemSerial = namePart
+                break
+            elif (re.findall("GPROX", namePart)) != []:
+                itemSerial = namePart
+                break
+            elif (re.findall("GPRO", namePart)) != []:
+                itemSerial = namePart
+                break
+            elif (re.findall("Laite", namePart)) != []:
+                itemSerial = "CYNOSA LITE ESSENTIAL"
+                break
+        
+        if itemSerial != "":
+            regularTemp = item["brand"] + " " + itemSerial
+        else:
+            regularTemp = nameTemp
+
+        # create data format
         dat = {
-            "Name": i["name"],
-            "Brand": i["brand"],
-            "PictureLink": i["img_url"],
-            "Detail": i["description"],
-            "Banana": i["bananaPrice"],
+            "Name": item["name"],
+            "Brand": item["brand"],
+            "PictureLink": item["img_url"],
+            "Detail": item["description"],
+            "Banana": item["bananaPrice"],
             "Ihavecpu": "0",
-            "RegularName": temp, 
-            "Color": i["feature"]["Color"]
+            "RegularName": regularTemp
+            # "Color": i["feature"]["Color"]
         }
         bananaKB.append(dat)
+        
+        # lisName.append(regularTemp)
 
-    for i in bananaKB:
-        a = i["Name"]
-        a = a.replace("(Red Switch)",'Red Switch')
-        a = a.replace("(Blue Switch)",'Blue Switch')
-        lis=[]
-        for m in a.split():
-            lis.append(m)
-        for j in lis:
-            if "(" in j:
-                lis.pop(lis.index(j))
-            elif "คีย์บอร์ดไร้สาย" in j:
-                lis.pop(lis.index(j))
-            elif "คีย์บอร์ด" in j:
-                lis.pop(lis.index(j))
-        a = " ".join(lis)
-        a = a.replace("-",'')
-        a = a.replace("/",' ')
-        a = a.replace("EN",'')
-        a = a.replace("TH",'')
-        a = a.replace("EO",'')
-        a = a.replace("G PRO",'GPRO')
-        i["Name"] = a
-        a = a.split()
+        # Add to Database
+        if keyAdd(dat) == False:
+            print("Cannot add --> ", item["name"])
 
-        for j in a:
-            x = re.findall("[0-9]+",j)
-            if x != []:
-                reg = j
-        if reg == "None":
-            temp = ' '.join(a)
-            temp = temp.upper()
-            i["RegularName"] = temp
-        else:
-            temp = i["Brand"] + " " + reg + " " + i["Color"]
-            temp = temp.upper()
-            i["RegularName"] = temp
-        temp = ""
-        reg = "None"
-        if i["Color"] in keyBoardColor:
-            pass
-        else:
-            keyBoardColor.append(i["Color"])
-        if keyAdd(i) == False:
-            return JsonResponse("Failed",safe=False)
-    
-    return JsonResponse(bananaKB,safe=False)
+    return JsonResponse(bananaKB, safe=False)
+
+# def testRenamingBNNKeyboard(request):
+#     lis = [
+#         "Altec Lansing Gaming Keyboard ALBK8264",
+#         "Altec Lansing Gaming Keyboard ALGK8614PUK",
+#         "Altec Lansing Gaming Keyboard BK8614 Pink/White",
+#         "Altec Lansing Gaming Keyboard BK8614 White/Pink",
+#         "Altec Lansing Gaming Keyboard GK8404 TKL Blue Switch",
+#         "Altec Lansing Gaming Keyboard GK8404 TKL Brown Switch",
+#         "Altec Lansing Gaming Keyboard GK8404 TKL Red Switch",
+#         "Altec Lansing Gaming Keyboard GK8404DQWP TKL Blue Switch",
+#         "Altec Lansing Gaming Keyboard GK8404FQPW TKL Blue Switch",
+#         "Altec Lansing Gaming Keyboard GK8404HQGW TKL Blue Switch",
+#         "Altec Lansing Gaming Keyboard GK8404KQWG TKL Blue Switch",
+#         "Aoc Gaming Keyboard GK200 Black",
+#         "Asus Gaming Keyboard ROG Strix Scope PBT/Th/Blue SW",
+#         "Asus Gaming Keyboard ROG Strix Scope PBT/Th/Red SW",
+#         "Asus Gaming Keyboard ROG Strix Scope TKL Electro Punk",
+#         "Asus Gaming Keyboard Rog Strix Scope TKL Gundam Edition/TH/Blue",
+#         "Asus Gaming Keyboard Rog Strix Scope TKL Gundam Edition/TH/Red",
+#         "Asus Gaming Keyboard TUF K1/Th",
+#         "Ducky Gaming Keyboard One 2 Rosa Special Edition Cow Cherry",
+#         "Fantech Gaming Keyboard K511 Thai",
+#         "Fantech Gaming Keyboard K613L Fighter II",
+#         "Fantech Gaming Keyboard MK853 Mechanical Keyboard (Red Switch)",
+#         "Fantech Gaming Keyboard MK853 Mechanical Keyboard (Blue Switch)",
+#         "Fantech Gaming Keyboard MK855 Maxfit108 Blue Switch",
+#         "Fantech Gaming Keyboard MK855 Maxfit108 Red Switch",
+#         "Fantech Gaming Keyboard Mk856 Mechanical Blue Switch",
+#         "Fantech Gaming Keyboard Mk856 Mechanical Red Switch",
+#         "Hyper X Gaming Keyboard Alloy Origins 60 Red/Linear Sw (Us)",
+#         "Hyper X Gaming Keyboard Alloy Origins Blue Sw (Th)",
+#         "Hyper X Gaming Keyboard Alloy Origins Core Blue Sw (Th)",
+#         "Hyper X Gaming Keyboard Alloy Origins Red Sw (Th)",
+#         "Keychron Gaming Keyboard K10 Wireless Mechanical Gateron (Hot-swappable) Brown Switch DG",
+#         "Keychron Gaming Keyboard K10 Wireless Mechanical Gateron (Hot-swappable) Blue Switch DG",
+#         "Keychron Gaming Keyboard K10 Wireless Mechanical Gateron (Hot-swappable) Red Switch DG",
+#         "Keychron Gaming Keyboard K2 V.2 Wireless Mechanical Gateron (Hot-swappable)",
+#         "Keychron Gaming Keyboard K4 V.2 Wireless Mechanical Gateron (Hot-swappable)",
+#         "Keychron Gaming Keyboard K6 Wireless Mechanical Gateron (Hot-swappable) Brown Switch DG",
+#         "Keychron Gaming Keyboard K6 Wireless Mechanical Gateron (Hot-swappable) Blue Switch DG",
+#         "Keychron Gaming Keyboard K6 Wireless Mechanical Gateron (Hot-swappable) Red Switch DG",
+#         "Keychron Gaming Keyboard K8 Wireless Mechanical Gateron (Hot-swappable) Brown Switch DG",
+#         "Keychron Gaming Keyboard K8 Wireless Mechanical Gateron (Hot-swappable) Blue Switch DG",
+#         "Keychron Gaming Keyboard K8 Wireless Mechanical Gateron (Hot-swappable) Red Switch DG",
+#         "Logitech Gaming Keyboard Carbon Mechanical G413",
+#         "Logitech Gaming Keyboard G Pro",
+#         "Logitech Gaming Keyboard G Pro X Black",
+#         "Logitech Gaming Keyboard G213 Prodigy RGB",
+#         "Logitech Gaming Keyboard G512 RGB Mechanical Carbon Clicky",
+#         "Logitech Gaming Keyboard G512 RGB Mechanical GX Red Linear Black",
+#         "Logitech Gaming Keyboard G913 Lightspeed Wireless RGB Mechanical Linear",
+#         "Logitech Gaming Keyboard G913 TKL Lightspeed Wireless RGB Mechanical Clicky",
+#         "Logitech Gaming Keyboard G913 TKL Lightspeed Wireless RGB Mechanical Linear",
+#         "Logitech Gaming Keyboard League of Legends Edition",
+#         "MeeTion Gaming Keyboard MT-K9300",
+#         "MeeTion Gaming Keyboard MT-K9420 Black",
+#         "MSI Gaming Keyboard&Mouse Vigor GK30",
+#         "Neolution Gaming Keyboard Agis Black",
+#         "Neolution Gaming Keyboard Andomida Black",
+#         "Neolution Gaming keyboard Mechanical Avatar Blue Switch",
+#         "Neolution Gaming Keyboard Terrablade Mechanical Blue switch Rainbow RGB",
+#         "Neolution Gaming Mechanical Keyboard Mystic Black",
+#         "Neolution Gaming Mechanical Keyboard Mystic Plus Black",
+#         "Nubwo Gaming Keyboard Flicker NK-34 Rosegold",
+#         "Nubwo Gaming Keyboard Fortune NK-32 Pink",
+#         "Nubwo Gaming Keyboard Fortune NK-32 Silver/Black",
+#         "Nubwo Gaming Keyboard Fortune NK-32 Silver/White",
+#         "Nubwo Gaming Keyboard Terminator X30",
+#         "Nubwo Gaming Keyboard Wizardy NK-38 Black",
+#         "Nubwo Gaming Keyboard Wizardy NK-38 Pink",
+#         "Nubwo Gaming Keyboard Wizardy NK-38 White",
+#         "Nubwo Gaming Keyboard X21 TKL Black Blue Switch",
+#         "Nubwo Gaming Keyboard X21 TKL Pink/White Blue Switch",
+#         "Nubwo Gaming Keyboard X21 TKL Silver/White Blue Switch",
+#         "Onikuma Gaming Keyboard Majin Mechanical Black",
+#         "Onikuma Gaming Keyboard Sakura Pink",
+#         "Philips Gaming Keyboard Mechanical (SPK8404) Grey Punk Key",
+#         "Philips Gaming Keyboard SPK8614 White/Pink",
+#         "Razer Gaming Keyboard Blackwidow Elite (US) Orange Switches",
+#         "Razer Gaming Keyboard Blackwidow Elite (US) Yellow Switches",
+#         "Razer Gaming Keyboard BlackWidow V3 Green Switch",
+#         "Razer Gaming Keyboard Blackwidow V3 Tenkey Th Black",
+#         "Razer Gaming Keyboard BlackWidow V3 Tenkeyless Yellow Switch",
+#         "Razer Gaming Keyboard BlackWidow V3 Yellow Switch",
+#         "Razer Gaming Keyboard Cynosa Laite (Thai)",
+#         "Razer Gaming Keyboard Cynosa V2",
+#         "Razer Gaming Keyboard Huntsman (Thai)",
+#         "Razer Gaming Keyboard Huntsman Elite Linear Optical Switch Black",
+#         "Razer Gaming Keyboard Huntsman Mini60 Clicky PP SW",
+#         "Razer Gaming Keyboard Huntsman Tournament Black",
+#         "Razer Gaming Keyboard Huntsman V2 TKL Clicky",
+#         "Razer Gaming Keyboard Huntsman V2 TKL Linearred",
+#         "Signo Gaming Keyboard INDIGO KB-718 MINI RGB Mechanical Blue Switches (Optical SW)",
+#         "Signo Gaming Keyboard INDIGO KB-718 MINI RGB Mechanical Red Switches (Optical SW)",
+#         "Signo Gaming Keyboard KB-741 P RGB Mechanical Pinkker (Red Switch)",
+#         "Signo Gaming Keyboard KB-771 R RGB Mechanical Trooper",
+#         "Signo Gaming Keyboard Mechanical Mini RGB Invego KB-728 Black",
+#         "Signo Gaming Keyboard Mechanical RGB Infesta KB-738 Black",
+#         "SIGNO Gaming Keyboard Mechanical RGB KB-741 P PINKKER",
+#         "Signo Gaming Keyboard Mechanical RGB Trooper KB-771 Black",
+#         "Signo Gaming Keyboard Mini RGB Mechanical Infesta KB-738 Black/Red Switches (Optical SW)",
+#         "Signo Gaming Keyboard Mini RGB Mechanical Invego KB-728 Black/Red Switches (Optical SW)",
+#         "Signo Gaming Keyboard RGB Mechanical EMPERRO KB-770 Black",
+#         "Signo Gaming Keyboard RGB Mechanical Magusta KB-781 Red Switch",
+#         "Signo Gaming Keyboard RGB Mechanical Magusta KB-781 Blue Switch",
+#         "Signo Gaming Keyboard Semi Mechanical CENTAURUS KB-730 Black",
+#         "Signo Gaming Keyboard Standard Illuminated KB-712 Black",
+#         "SteelSeries Gaming Keyboard Apex 7 Th Blue-SW Mechanical",
+#         "SteelSeries Gaming Keyboard Apex 7 TH Red-SW Mechanical",
+#         "SteelSeries Gaming Keyboard Apex 7 TKL Blue-SW Mechanical",
+#         "SteelSeries Gaming Keyboard Apex 7 TKL Red-SW Mechanical",
+#         "SteelSeries Gaming Keyboard Apex Pro Th Mechanical",
+#         "SteelSeries Gaming Keyboard Mechanical Apex 3 TH Black",
+#         "SteelSeries Gaming Keyboard Mechanical Apex 5 Black"
+#         ]
+
+#     removeWords = [" Gaming Keyboard Mechanical", " Gaming Keyboard", " Mechanical", " Gateron", " (Red Switch)", "(Hot-swappable) ", " (Optical SW)", " Mini RGB", " RGB", "."]
+
+#     regularList = list()
+
+#     for item in lis:
+
+#         itemSerial = ""
+#         nameTemp = item
+
+#         for removeWord in removeWords:
+#             nameTemp = nameTemp.replace(removeWord, "")
+#         nameTemp = nameTemp.replace("G PRO X", "GPROX")
+#         nameTemp = nameTemp.replace("G PRO", "GPRO")
+
+#         for namePart in nameTemp.split():
+#             if (re.findall("[0-9]+", namePart)) != []:
+#                 if len(namePart) <= 2:
+#                     continue
+#                 itemSerial = namePart
+#                 break
+#             elif (re.findall("GPROX", namePart)) != []:
+#                 itemSerial = namePart
+#                 break
+#             elif (re.findall("GPRO", namePart)) != []:
+#                 itemSerial = namePart
+#                 break
+        
+#         regularTemp = ""
+#         if itemSerial != "":
+#             regularTemp += " " + itemSerial
+#         else:
+#             regularTemp += " " + nameTemp
+
+#         regularList.append(regularTemp)
+
+#     return JsonResponse(regularList, safe=False)
+
 
 ################################ IHaveCPU Keyboard ##########################
 @csrf_exempt
@@ -404,7 +624,9 @@ def addKBFromIHaveCpu(request):
     ihavecpuKeyboard = []
     nameList = []
     removeWords = ["-", "/ ", "(EN/TH)", "[TH/EN]", "[EN/TH]",  "(EN)", "TH/EN", "(RGB LED)", "(MEMBRANE) ", "GAMING ", "KEYBOARD "]
-    switchType = ["PRO ","BLUE SWITCH", "RED SWITCH", "CLICKY", "TACTILE", "NX BLUE", "NX BROWN"]
+    # switchType = ["PRO ","BLUE SWITCH", "RED SWITCH", "CLICKY", "TACTILE", "NX BLUE", "NX BROWN"]
+
+    lisRegName = list()
 
     for item in lis:
         
@@ -412,7 +634,7 @@ def addKBFromIHaveCpu(request):
         regularTemp = ""
         nameTemp = ""
         itemSerial = ""
-        itemType = ""
+        # itemType = ""
         if item["name"] not in nameList:
             # for checking duplicate
             nameList.append(item["name"])
@@ -420,28 +642,32 @@ def addKBFromIHaveCpu(request):
             nameTemp = item["name"]
             for word in removeWords:
                 nameTemp = nameTemp.replace(word, "")
+            nameTemp = nameTemp.replace("G PRO X", "GPROX")
             nameTemp = nameTemp.replace("G PRO", "GPRO")
 
             for namePart in nameTemp.split():
                 if re.findall("[0-9]+", namePart) != []:
                     itemSerial = namePart
                     break
-                if re.findall("STRIX", namePart) != []:
+                elif re.findall("STRIX", namePart) != []:
                     itemSerial = namePart
                     break
-                if re.findall("GPRO", namePart) != []:
+                elif re.findall("GPROX", namePart) != []:
+                    itemSerial = namePart
+                    break
+                elif re.findall("GPRO", namePart) != []:
                     itemSerial = namePart
                     break
             
-            for word in switchType:
-                if re.findall(word, nameTemp) != []:
-                    itemType = word
+            # for word in switchType:
+            #     if re.findall(word, nameTemp) != []:
+            #         itemType = word
 
             regularTemp = item["brand"]
-            if itemSerial != "" or itemType != "":
+            if itemSerial != "":
                 regularTemp += " " + itemSerial
-                if itemType != "":
-                    regularTemp += " " + itemType
+                # if itemType != "":
+                #     regularTemp += " " + itemType
             else:
                 regularTemp += " " + nameTemp
 
@@ -455,12 +681,15 @@ def addKBFromIHaveCpu(request):
                     "Ihavecpu": item["price"],
                     "RegularName": regularTemp.strip()
                     }
+            
             ihavecpuKeyboard.append(dataDict)
+            lisRegName.append(dataDict["RegularName"])
 
         # add to database 
         if keyAdd(dataDict) == False:
-            return JsonResponse("Failed",safe=False)
-    return JsonResponse(ihavecpuKeyboard, safe=False)
+            print("Cannot add --> ", item["name"])
+
+    return JsonResponse(lisRegName, safe=False)
 
 # @csrf_exempt
 # def testRenamingIHaveCpuKeyboard(request):
