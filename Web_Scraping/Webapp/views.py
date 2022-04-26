@@ -207,7 +207,7 @@ def catchTest(dataT):
     else:
         return False
 
-# add Banana mouse
+################################### add Banana mouse ############################
 @csrf_exempt
 def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
@@ -277,6 +277,8 @@ def addMouseFromBanana(request):
             JsonResponse("Failed To Add",safe=False)
     return JsonResponse(bananaMouse,safe=False)
 
+################################ add IHaveCPU Mouse ##########################
+
 # add IhaveCPU mouse
 @csrf_exempt
 def addMouseFromIHav(request):
@@ -325,6 +327,7 @@ def addMouseFromIHav(request):
         datLis.append(dat)
     return JsonResponse(datLis,safe=False)
 
+################################ add Keyboard ##########################
 
 @csrf_exempt
 def addKBFromBanana(requset):
@@ -391,7 +394,7 @@ def addKBFromBanana(requset):
     
     return JsonResponse(bananaKB,safe=False)
 
-# IHaveCPU Keyboard
+################################ IHaveCPU Keyboard ##########################
 @csrf_exempt
 def addKBFromIHaveCpu(request):
     # get all keyboard from IHaveCPU
@@ -501,7 +504,7 @@ def addKBFromIHaveCpu(request):
 #     return JsonResponse(lis, safe=False)
 
 
-# HeadGear Banana
+############################### HeadGear Banana #############################
 @csrf_exempt
 def addHeadGearBanana(request):
     # get all headgear from Banana
@@ -532,7 +535,7 @@ def addHeadGearBanana(request):
             "Ihavecpu": "0",
             "PictureLink": item["img_url"],
             "Detail": item["description"],
-            "RegularName": regularName.strip()
+            "RegularName": (regularName.strip()).upper()
         }
         bananaHeadGear.append(dataDict)
 
@@ -563,7 +566,7 @@ def addHeadGearBanana(request):
 #     return JsonResponse(nameList, safe=False)
 
 
-# HeadGear IHaveCPU
+############################# HeadGear IHaveCPU ########################
 @csrf_exempt
 def addHeadGearIHaveCpu(request):
     # get all headgear from IHaveCPU
