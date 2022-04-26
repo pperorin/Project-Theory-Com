@@ -7,7 +7,7 @@ function Dropdown() {
     const [dropdown, setDropdown] = useState(false);
 
     return (
-        <div className="dd-container">
+        
             <ul
                 className={dropdown ? 'services-submenu clicked' : 'services-submenu'}
                 onClick={() => setDropdown(!dropdown)}
@@ -23,7 +23,7 @@ function Dropdown() {
                     );
                 })}
             </ul>
-        </div>
+        
     );
 }
 

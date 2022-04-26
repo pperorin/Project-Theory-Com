@@ -11,7 +11,7 @@
     list-style: none;
     text-align: center;
     justify-content: flex-end;
-    margin-right: 2rem;
+    margin-left: 60rem;
   }
   
   .nav-item {
@@ -23,10 +23,14 @@
   .nav-item a {
     text-decoration: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-right: 2rem;
-    padding: 6px 16px;
+    padding: 15px 15px;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
   }
   
   .nav-item a:hover {
