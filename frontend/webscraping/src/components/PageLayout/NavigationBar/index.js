@@ -1,33 +1,26 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import './NavigationStyle.css'
-import Dropdown from "./Dropdown";
-import { navItems } from "./NavItems";
-
-
+import './NavigationStyle.css';
+import Dropdown from './Dropdown';
+import { navItems } from './NavItems';
 
 const NavigationBar = () => {
-
     const [dropdown, setDropdown] = useState(false);
     const [search, setSearch] = useState('');
-    const [searchParams ,setSearchParams] = new useSearchParams();
+    const [searchParams, setSearchParams] = new useSearchParams();
     const searchKeyword = searchParams.get('search');
 
-    const onEnterSearch =() => {
-        if (search !== '') {
-            setSearchParams({search});
-        }
-    }
+    const onEnterSearch = () => {
+        setSearchParams({ search });
+    };
 
     useEffect(() => {
         if (searchKeyword) {
             setSearch(searchKeyword);
-        }
-        else {
+        } else {
             setSearch('');
         }
     }, [searchKeyword]);
-
 
     return (
         <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
@@ -35,10 +28,10 @@ const NavigationBar = () => {
                 <a href="/" className="flex items-center">
                     <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">LOGO</span>
                 </a>
-                <div className='Bars'>
+                <div className="Bars">
                     <ul className="nav-items">
                         {navItems.map((item) => {
-                            if (item.title === "Home") {
+                            if (item.title === 'Home') {
                                 return (
                                     <li
                                         key={item.id}
@@ -58,7 +51,6 @@ const NavigationBar = () => {
                             );
                         })}
                     </ul>
-
                 </div>
                 <div className="flex md:order-2">
                     <div className="hidden relative mr-3 md:mr-0 md:block">
@@ -82,7 +74,7 @@ const NavigationBar = () => {
                             placeholder="ค้นหาสินค้า..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            onKeyPress={event => {
+                            onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                     onEnterSearch();
                                 }
@@ -90,7 +82,6 @@ const NavigationBar = () => {
                         />
                     </div>
                 </div>
-               
             </div>
         </nav>
     );
