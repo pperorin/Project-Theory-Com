@@ -1,12 +1,33 @@
-import { Link } from 'react-router-dom'
-import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react';
 import './NavigationStyle.css'
 import Dropdown from "./Dropdown";
 import { navItems } from "./NavItems";
 
+
+
 const NavigationBar = () => {
 
     const [dropdown, setDropdown] = useState(false);
+    const [search, setSearch] = useState('');
+    const [searchParams ,setSearchParams] = new useSearchParams();
+    const searchKeyword = searchParams.get('search');
+
+    const onEnterSearch =() => {
+        if (search !== '') {
+            setSearchParams({search});
+        }
+    }
+
+    useEffect(() => {
+        if (searchKeyword) {
+            setSearch(searchKeyword);
+        }
+        else {
+            setSearch('');
+        }
+    }, [searchKeyword]);
+
 
     return (
         <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
@@ -59,9 +80,17 @@ const NavigationBar = () => {
                             type="text"
                             className="block p-2 pl-10 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="ค้นหาสินค้า..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyPress={event => {
+                                if (event.key === 'Enter') {
+                                    onEnterSearch();
+                                }
+                            }}
                         />
                     </div>
                 </div>
+               
             </div>
         </nav>
     );

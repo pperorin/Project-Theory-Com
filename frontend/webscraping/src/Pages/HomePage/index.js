@@ -1,10 +1,16 @@
-import { PageLayout, ProductCard } from "../../components";
+import { useSearchParams } from 'react-router-dom'
+
 import axios from "axios";
+import { PageLayout, ProductCard } from "../../components";
 import { useState, useEffect } from "react";
 
 const HomePage = () => {
   const [productcard, setProductcard] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [searchParams] = new useSearchParams();
+  const searchInput = searchParams.get('search')
+
   useEffect(() => {
     const getdata = async () => {
       try {
@@ -42,6 +48,7 @@ const HomePage = () => {
     // getdata2();
   }, []);
 
+
   return (
     <PageLayout>
       <div className="grid grid-cols-4">
@@ -60,8 +67,8 @@ const HomePage = () => {
                 )
               
                 : (
-                  productcard.map((product) => {
-                    return <ProductCard product={product} />;
+                  productcard.map((product,index) => {
+                    return <ProductCard product={product} key={index}/>;
                   })
                 )}
              

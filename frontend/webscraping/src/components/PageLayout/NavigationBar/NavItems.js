@@ -21,7 +21,7 @@ export const navItems = [
     {
       id: 2,
       title: "Headset",
-      path: "./Headset",
+      path: "./Headgear",
       cName: "submenu-item",
       icon: <FaHeadset/>
     },
