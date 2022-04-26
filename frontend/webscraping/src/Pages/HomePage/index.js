@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 
 const HomePage = () => {
   const [productcard, setProductcard] = useState([]);
-  const [allFetchProduct, setAllfetchProduct] = useState([]);
   const [allSearchProduct, setAllSearchProduct] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +40,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (searchInput && !loading) {
-      const dataFilter = ["Name", "RegularName", "Brand"];
+      const dataFilter = ["Name", "RegularName", "Brand","Type"];
       const data = productcard.filter((item) => {
         return dataFilter.some((filter) => {
           if (item[filter]) {
