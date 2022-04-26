@@ -11,9 +11,9 @@ const ProductCard = ({ product }) => {
       navigate(`/mouse/${product.MouseId}`);
     }
   };
-  if (product.Banana === 0) {
+  if (product.Banana === "0") {
     var cost = product.Ihavecpu;
-  } else {
+  } else  {
     var cost = product.Banana;
   }
 
