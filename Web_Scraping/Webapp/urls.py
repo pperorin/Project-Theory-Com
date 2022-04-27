@@ -24,13 +24,12 @@ urlpatterns=[
     url(r'^ihavecpuHeadGear$', views.addHeadGearIHaveCpu)
 
 
-    # for testing functions
+    # ------ for testing functions ------
     # url(r'^testDep$', views.hellofromIhveCPU),
-    # url(r'^testRenamingBNNKeyboard$', views.testRenamingBNNKeyboard)
-    # url(r'^testRenamingIHaveCpuKeyboard$', views.testRenamingIHaveCpuKeyboard)
+    # url(r'^testRenamingBNNKeyboard$', views.testRenamingBNNKeyboard),
+    # url(r'^testRenamingIHaveCpuKeyboard$', views.testRenamingIHaveCpuKeyboard),
     # url(r'^testRenamingBNNHeadGear$', views.testRenamingBNNHeadGear),
     # url(r'^testRenamingIHaveCpuHeadGear$', views.testRenamingIHaveCpuHeadGear)
-    # # url(r'^testHi',views.testHi)
 ]
 
 

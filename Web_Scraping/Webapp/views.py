@@ -1,29 +1,22 @@
-from os import remove
-from sys import set_asyncgen_hooks
-from unicodedata import name
-from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 
 from rest_framework.parsers import JSONParser
 
 from Webapp.serializers import MouseSerializer,KeyboardSerializer,HeadGearSerializer
 from Webapp.models import Mouse,Keyboard,HeadGear
+
 from Web_Scraping import views as webScrap
 
 import re
 import requests
 
-# Create your views here.
-bananaMouse = []
-
 notGoodName = ["Micropack Wireless Mouse + Keyboard KM-203W Black (TH/EN)","Rapoo Bluetooth and Wireless Mouse + Keyboard 8000M (TH/EN) (EO)","Rapoo Wireless Mouse + Keyboard 1800S Black (TH/EN) (EO)"]
 colorLis = ["BLACK","BLUE","WHITE","GREEN","RED","YELLOW", "GREY", "PINK", "PURPLE"]
-keyBoardColor = []
 
 def hellofromIhaveCPU(request):
     return JsonResponse("Hi there", safe=False)
-
 
 @csrf_exempt
 def mouseApi(request,id=0):
@@ -214,6 +207,8 @@ def catchTest(dataT):
 def addMouseFromBanana(request):
     lis = webScrap.Banana("mouse")
     temp =""
+    bananaMouse = []
+      
     for i in lis:
         if i["feature"]:
             dat = {
@@ -241,9 +236,11 @@ def addMouseFromBanana(request):
             pass
         else:
             bananaMouse.append(dat)
+
     for i in bananaMouse:
         thaiWord = re.compile(re.escape('เมาส์ไร้สาย'), re.IGNORECASE)
         a = i["Name"]
+
         if ("เมาส์ไร้สาย" in a) and ("Wireless" not in a):
             a = a.replace("เมาส์ไร้สาย","Wireless")
         if "[email protected]" in a:
@@ -271,16 +268,18 @@ def addMouseFromBanana(request):
                     strt = c + " " + j
                 strup = strt.upper()
                 i["RegularName"] = strup
+
         if isAdded == False:
             getjoinstr = ' '.join(a)
             getupstr = getjoinstr.upper()
             i["RegularName"] = getupstr
+
         if mouseAdd(i) == False:
             JsonResponse("Failed To Add",safe=False)
+
     return JsonResponse(bananaMouse,safe=False)
 
-################################ add IHaveCPU Mouse ##########################
-
+################################ add IhaveCPU Mouse ##########################
 # add IhaveCPU mouse
 @csrf_exempt
 def addMouseFromIHav(request):
@@ -290,6 +289,7 @@ def addMouseFromIHav(request):
     temp = ""
     reg = "None"
     datLis = []
+
     for i in lis:
         a = i["name"]
         a = a.replace("(",'')
@@ -298,12 +298,14 @@ def addMouseFromIHav(request):
         a = a.replace("G PRO X",'GPROX')
         a = a.replace("G PRO","GPRO")
         a = a.split()
+
         for idx,j in enumerate(a):
             x = re.findall("[0-9]+",j)
             if j in colLis:
                col = j
             if x != []:
                 reg = j
+
         if reg == "None":
             temp = ' '.join(a)
         else:
@@ -321,15 +323,18 @@ def addMouseFromIHav(request):
             "Ihavecpu": i["price"],
             "RegularName": temp
         }
+
         temp = ""
         col = "None"
         reg = "None"
+        datLis.append(dat)
+
         if mouseAdd(dat) == False:
             return JsonResponse("Failed",safe=False)
-        datLis.append(dat)
+        
     return JsonResponse(datLis,safe=False)
 
-################################ add Keyboard ##########################
+################################ add Banana Keyboard ##########################
 
 # @csrf_exempt
 # def addKBFromBanana(requset):
@@ -348,7 +353,6 @@ def addMouseFromIHav(request):
 #             "Color": i["feature"]["Color"]
 #         }
 #         bananaKB.append(dat)
-
 #     for i in bananaKB:
 #         a = i["Name"]
 #         a = a.replace("(Red Switch)",'Red Switch')
@@ -372,7 +376,6 @@ def addMouseFromIHav(request):
 #         a = a.replace("G PRO",'GPRO')
 #         i["Name"] = a
 #         a = a.split()
-
 #         for j in a:
 #             x = re.findall("[0-9]+",j)
 #             if x != []:
@@ -393,7 +396,6 @@ def addMouseFromIHav(request):
 #             keyBoardColor.append(i["Color"])
 #         if keyAdd(i) == False:
 #             return JsonResponse("Failed",safe=False)
-    
 #     return JsonResponse(bananaKB,safe=False)
 
 @csrf_exempt
@@ -405,7 +407,6 @@ def addKBFromBanana(request):
     bananaKB = list()
     removeWords = [" Gaming Keyboard Mechanical", " Gaming Keyboard", " Mechanical", " Gateron", " (Red Switch)", " (Hot-swappable)", " (Optical SW)", " Mini RGB", " RGB", "."]
 
-    
     for item in lis:
 
         itemSerial = ""
@@ -418,6 +419,7 @@ def addKBFromBanana(request):
         nameTemp = nameTemp.replace("G Pro X", "GPROX")
         nameTemp = nameTemp.replace("G Pro", "GPRO")
 
+        # Filter Item Serial for RegularName
         for namePart in nameTemp.split():
             if (re.findall("[0-9]+", namePart)) != []:
                 if len(namePart) <= 2:
@@ -439,7 +441,7 @@ def addKBFromBanana(request):
         else:
             regularTemp = nameTemp
 
-        # create data format
+        # Create data format
         dat = {
             "Name": item["name"],
             "Brand": item["brand"],
@@ -840,6 +842,7 @@ def addHeadGearIHaveCpu(request):
         # add to database
         if headgearAdd(dataDict) == False:
             print("Cannot add --> ", item["name"])
+            
     return JsonResponse(ihavecpuHeadGear, safe=False)
 
 # @csrf_exempt
