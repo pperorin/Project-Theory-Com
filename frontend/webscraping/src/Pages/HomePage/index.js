@@ -3,14 +3,53 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { PageLayout, ProductCard } from "../../components";
 import { useState, useEffect } from "react";
+import MockData from "../../components/MockData";
+import FilterButton from "../../components/FilterButton";
+
+const allBrand = ["All", ...new Set(MockData.map((item) => item.Brand))];
 
 const HomePage = () => {
   const [productcard, setProductcard] = useState([]);
   const [allSearchProduct, setAllSearchProduct] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [buttons, setButtons] = useState(allBrand);
+  const [currData, setCurrData] = useState([]);
+  const [min, setMin] = useState();
+  const [max, setMax] = useState();
 
   const [searchParams] = new useSearchParams();
   const searchInput = searchParams.get("search");
+
+  const filter = (button) => {
+    if (button === "All") {
+      setCurrData(MockData);
+      setProductcard(MockData);
+      return;
+    }
+    const filteredData = MockData.filter(
+      (MockData) => MockData.Brand === button
+    );
+    setCurrData(filteredData);
+    setProductcard(filteredData);
+    // console.log(currData);
+  };
+
+  const rangeFilter = async (min, max) => {
+    const filteredPrice = await MockData.filter(
+      (MockData) =>
+        parseFloat(MockData.Banana.replace(/,/g, "")) >= min &&
+        parseFloat(MockData.Banana.replace(/,/g, "")) <= max
+    );
+    await filteredPrice.concat(
+      MockData.filter(
+        (MockData) =>
+          parseFloat(MockData.Ihavecpu.replace(/,/g, "")) >= min &&
+          parseFloat(MockData.Ihavecpu.replace(/,/g, "")) <= max
+      )
+    );
+    await setProductcard(filteredPrice);
+    await console.log(filteredPrice);
+      };
 
   useEffect(() => {
     const getdata = async () => {
@@ -63,8 +102,46 @@ const HomePage = () => {
   return (
     <PageLayout>
       <div className="grid grid-cols-4">
-        <div className="col-span-1 border-4 border-sky-500 mr-8">
-          Filter panel
+        <div className="col-span-1 mr-8">
+          {/* <FilterPanel shop={shops} changeChecked={handleChangeChecked} /> */}
+          {/* <p>{productcard}</p> */}
+          {/* <Checkbox/> */}
+          <p class="text-xl">Filter</p>
+          <div>
+            <p class="text-lg">Price Range</p>
+            {/* <PriceRange /> */}
+            <div class="items-center">
+              <input
+                class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="min"
+                type="text"
+                placeholder="min"
+                onChange={(e) => setMin(e.target.value)}
+              />
+              <input
+                class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="max"
+                type="text"
+                placeholder="max"
+                onChange={(e) => setMax(e.target.value)}
+              />
+              <div >
+                <button
+                  type="button"
+                  data-mdb-ripple="true"
+                  data-mdb-ripple-color="light"
+                  onClick={() => rangeFilter(min, max)}
+                  class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out m-2 "
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="text-lg">Brands</p>
+            <FilterButton button={buttons} filter={filter} />
+          </div>
         </div>
 
         {loading && (
