@@ -25,7 +25,11 @@ def helloFromWebScr(request):
     # return JsonResponse("Hello", safe=False)
     return JsonResponse(Banana("headphone"), safe=False)
 
+def helloBanana(request):
+    return JsonResponse(Banana("mouse"), safe=False)
 
+def helloIhaveCPU(request):
+    return JsonResponse(ihavecpu("keyboard"), safe=False)
 
 @csrf_exempt
 def throwTest(request):
@@ -59,7 +63,7 @@ def Banana(device):
         soup = BeautifulSoup(res.text, 'html.parser')
         table = soup.find(
             "table", {"class": "product-detail-specification-table table -striped"})
-        if table != None: 
+        if table != None:
             info = table.find_all("td")
             for j in range(0, len(info), 2):
                 feature[info[j].text[1:-1]] = info[j+1].text[1:-1]
@@ -125,7 +129,7 @@ def Banana(device):
             # description
             obj["description"] = getDescription(obj["link"])
             # feature
-            obj["feature"] = getFeature(obj["link"])    
+            obj["feature"] = getFeature(obj["link"])
             datas.append(obj)
             # print(obj)
     return datas
@@ -156,61 +160,72 @@ def ihavecpu(device):
         res = requests.get(url+str(1))
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        allDevice = soup.find(
+        allCard = soup.find(
             "div", {"class": "productsArea tsk-dataview thumbnailArea size-250r frame-000"})
-        device = allDevice.find_all(
+        card = allCard.find_all(
             "div", {"class": "productArea productItem"})
-        for i in range(len(device)):
-            name = device[i].find("a", {"class": "gadgetThumbnail"}).get(
-                "title").split(" ")
-            brand = name[1]
-            realname = ""
-            for j in range(2, len(name)):
-                realname += name[j] + " "
-            link = device[i].find(
-                "a", {"class": "gadgetThumbnail"}).get("href")
-            price = device[i].find(
-                "div", {"class": "product_price has_currency_unit"}).text
-            image_url = device[i].find("img").get("data-src")
+
+        for i in range(len(card)):
+            device = card[i].find_all("a", {"class": "gadgetThumbnail"})
+            # name
+            patternName = "\"name\":.*\"price"
+            name = re.findall(patternName, device[0].get("gaeepd"))
+            # brand
+            brand = re.split("\s", name[0][8:-8])[1]
+            # price
+            patternPrice = "price\":.*,\"category"
+            price = re.findall(patternPrice, device[0].get("gaeepd"))
+            # link
+            link = device[0].get("href")
+            # image
+            imageLink = device[0].find("img").get("data-src")
+            # description
+            description = getDescription(link)
+
             obj = {
-                "name": realname,
+                "name": name[0][8:-8],
                 "brand": brand,
-                "price": price[:-7],
-                "img_url": image_url,
-                "description": getDescription(link)
+                "price": int(price[0][8:-14]),
+                "img_url": imageLink,
+                "description": description
             }
             datas.append(obj)
         return datas
     else:
         numberOfPage = int(page[-1].text)
-        for numPage in range(1,numberOfPage + 1):
+        for numPage in range(1, numberOfPage + 1):
             print("Now page is: ", numPage)
             res = requests.get(url+str(numPage))
             soup = BeautifulSoup(res.text, 'html.parser')
 
-            allDevice = soup.find(
+            allCard = soup.find(
                 "div", {"class": "productsArea tsk-dataview thumbnailArea size-250r frame-000"})
-            device = allDevice.find_all(
+            card = allCard.find_all(
                 "div", {"class": "productArea productItem"})
-            for i in range(len(device)):
-                name = device[i].find("a", {"class": "gadgetThumbnail"}).get(
-                    "title").split(" ")
-                brand = name[1]
-                realname = ""
-                for j in range(2, len(name)):
-                    realname += name[j] + " "
-                link = device[i].find(
-                    "a", {"class": "gadgetThumbnail"}).get("href")
-                price = device[i].find(
-                    "div", {"class": "product_price has_currency_unit"}).text
-                image_url = device[i].find("img").get("data-src")
+
+            for i in range(len(card)):
+                device = card[i].find_all("a", {"class": "gadgetThumbnail"})
+                # name
+                patternName = "\"name\":.*\"price"
+                name = re.findall(patternName, device[0].get("gaeepd"))
+                # brand
+                brand = re.split("\s", name[0][8:-8])[1]
+                # price
+                patternPrice = "price\":.*,\"category"
+                price = re.findall(patternPrice, device[0].get("gaeepd"))
+                # link
+                link = device[0].get("href")
+                # image
+                imageLink = device[0].find("img").get("data-src")
+                # description
+                description = getDescription(link)
+
                 obj = {
-                    "name": realname,
+                    "name": name[0][8:-8],
                     "brand": brand,
-                    "price": price[:-7],
-                    "img_url": image_url,
-                    "description": getDescription(link)
+                    "price": int(price[0][8:-14]),
+                    "img_url": imageLink,
+                    "description": description
                 }
                 datas.append(obj)
         return datas
-    

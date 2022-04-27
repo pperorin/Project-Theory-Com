@@ -22,7 +22,7 @@ from Web_Scraping import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^',include('Webapp.urls')),
-    #url(r'^helloBanana', views.helloFromWebScr),
-    #url(r'^helloIhaveCPU', views.hellofromIhaveCPU),
+    url(r'^helloBanana', views.helloBanana),
+    url(r'^helloIhaveCPU', views.helloIhaveCPU),
     url(r'^throw',views.throwTest)
 ]
