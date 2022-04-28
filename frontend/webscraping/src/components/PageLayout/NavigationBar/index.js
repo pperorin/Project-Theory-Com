@@ -26,7 +26,10 @@ const NavigationBar = () => {
         <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
             <div className="container flex flex-wrap justify-between items-center mx-auto">
                 <a href="/" className="flex items-center">
-                    <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">LOGO</span>
+                    <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">HOME</span>
+                </a>
+                <a href="https://github.com/pperorin/Project-Theory-Com" className="flex items-center">
+                    <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">GITHUB</span>
                 </a>
                 <div className="Bars">
                     <ul className="nav-items">
