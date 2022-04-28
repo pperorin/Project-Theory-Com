@@ -26,7 +26,7 @@ const NavigationBar = () => {
         <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
             <div className="container flex flex-wrap xl:justify-between items-center mx-auto">
                 <a href="/" className="flex items-center mr-5">
-                    <img className="self-center text-xl font-semibold whitespace-nowrap dark:text-white h-5 w-10 object-contain" src='https://logodix.com/logo/264097.png'></img>
+                    <img className="self-center text-xl font-semibold whitespace-nowrap  h-5 w-10 object-contain " src='https://www.nicepng.com/png/full/51-511331_small-white-cat-clip-art-at-clker-schrodingers.png'></img>
                 </a>
                 <a href="/" className="flex items-center mr-5">
                     <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">HOME</span>
