@@ -62,76 +62,70 @@ const Stuffinfo = () => {
   }
 
   return (
-    <>
-      <PageLayout>
-        {loading ? (
-          <p>loading...</p>
-        ) : (
-          <div className="flex flex-col w-full h-full justify-center">
-            <div className="grid grid-cols-5 grid-rows-2 gap-12 ">
-              <div className="flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-3 ">
-                <img
-                  className="bg-white h-96 w-96  object-cover "
-                  src={info.PictureLink}
-                  alt=""
-                ></img>
-                <div className="text-2xl">ร้านค้าที่จำหน่าย</div>
-              </div>
-              <div className="flex flex-col h-full w-full m-auto rounded-xl row-span-2 col-span-2 gap-2 ">
-                <div className="pt-20 text-ellipsis max-w-sm">{info.Name}</div>
-                <div className="pt-10 ">{price} บาท</div>
+      <>
+          <PageLayout>
+              {loading ? (
+                  <p>loading...</p>
+              ) : (
+                  <div className="flex flex-col w-full h-full justify-center">
+                      <div className="grid grid-cols-5 grid-rows-2 gap-12 ">
+                          <div className="flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-3 ">
+                              <img className="bg-white h-96 w-96  object-cover " src={info.PictureLink} alt=""></img>
+                              <div className="text-2xl">ร้านค้าที่จำหน่าย</div>
+                          </div>
+                          <div className="flex flex-col h-full w-full m-auto rounded-xl row-span-2 col-span-2 gap-2 ">
+                              <div className="pt-20 text-ellipsis max-w-sm font-bold">{info.Name}</div>
+                              <div className="pt-10 ">{price} บาท</div>
 
-                <div className=" ">มีทั้งหมด {shop} ร้านค้า</div>
-              </div>
-            </div>
-            {info.Banana !== "0"&&(
-            <div className="flex flex-col   w-full h-full justify-between  ">
-              <div className="grid grid-cols-2 grid-rows-1 gap-12 ">
-                <div className=" flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-1 pr-20 ">
-                  <div>
-                    <img
-                      className="bg-white h-40 w-40  object-contain "
-                      src="https://media.discordapp.net/attachments/802277621772714004/964625721106526208/unknown.png"
-                      alt=""
-                    />
+                              <div className=" ">มีทั้งหมด {shop} ร้านค้า</div>
+                          </div>
+                      </div>
+                      {info.Banana !== '0' && (
+                          <div className="flex flex-col   w-full h-full justify-between  ">
+                              <div className="grid grid-cols-2 grid-rows-1 gap-12 ">
+                                  <div className=" flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-1 pr-20 ">
+                                      <div>
+                                          <img
+                                              className="bg-white h-40 w-40  object-contain "
+                                              src="https://media.discordapp.net/attachments/802277621772714004/964625721106526208/unknown.png"
+                                              alt=""
+                                          />
+                                      </div>
+                                  </div>
+                              </div>
+                              <div className="grid grid-cols-6 grid-rows-1 gap-12 ">
+                                  <div className="flex flex-row h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-5 space-x-20 ">
+                                      <div className="">{info.Name}</div>
+                                      <div className="items-end">{info.Banana} บาท</div>
+                                  </div>
+                              </div>
+                          </div>
+                      )}
+                      {info.Ihavecpu !== '0' && (
+                          <div className="flex flex-col   w-full h-full justify-between ">
+                              <div className="grid grid-cols-2 grid-rows-1 gap-12 ">
+                                  <div className=" flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-1 pr-20 ">
+                                      <div>
+                                          <img
+                                              className="bg-white h-40 w-40  object-contain "
+                                              src="https://cf.shopee.co.th/file/0aa5de07c908febaf2a78af8a0587799"
+                                              alt=""
+                                          />
+                                      </div>
+                                  </div>
+                              </div>
+                              <div className="grid grid-cols-6 grid-rows-1 gap-12 ">
+                                  <div className="flex flex-row h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-5 space-x-20 ">
+                                      <div className="">{info.Name}</div>
+                                      <div className="items-end">{info.Ihavecpu} บาท</div>
+                                  </div>
+                              </div>
+                          </div>
+                      )}
                   </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-6 grid-rows-1 gap-12 ">
-                <div className="flex flex-row h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-5 space-x-20 ">
-                  <div className="">
-                    {info.Name}
-                  </div>
-                  <div className="items-end">{info.Banana} บาท</div>
-                </div>
-              </div>
-            </div>)}
-            {info.Ihavecpu !=="0"&&(
-            <div className="flex flex-col   w-full h-full justify-between ">
-              <div className="grid grid-cols-2 grid-rows-1 gap-12 ">
-                <div className=" flex flex-col h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-1 pr-20 ">
-                  <div>
-                    <img
-                      className="bg-white h-40 w-40  object-contain "
-                      src="https://cf.shopee.co.th/file/0aa5de07c908febaf2a78af8a0587799"
-                      alt=""
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-6 grid-rows-1 gap-12 ">
-                <div className="flex flex-row h-full w-full m-auto justify-center items-center rounded-xl row-span-2 col-span-5 space-x-20 ">
-                  <div className="">
-                    {info.Name}
-                  </div>
-                  <div className="items-end">{info.Ihavecpu} บาท</div>
-                </div>
-              </div>
-            </div>)}
-          </div>
-        )}
-      </PageLayout>
-    </>
+              )}
+          </PageLayout>
+      </>
   );
 };
 export default Stuffinfo;
