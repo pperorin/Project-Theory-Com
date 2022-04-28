@@ -407,13 +407,12 @@ def addKBFromIHaveCpu():
             #     if re.findall(word, nameTemp) != []:
             #         itemType = word
 
-            regularTemp = item["brand"]
             if itemSerial != "":
-                regularTemp += item["brand"] + " " + itemSerial
+                regularTemp = item["brand"] + " " + itemSerial
                 # if itemType != "":
                 #     regularTemp += " " + itemType
             else:
-                regularTemp += " " + nameTemp
+                regularTemp = nameTemp
             # create data format
             dataDict = {
                     "Name": (item["name"]).strip(),
@@ -451,16 +450,29 @@ def addHeadGearBanana():
         # nameList.append(regularName)
 
         # data format
-        dataDict = {
-            "Name": item["name"].strip(),
-            "Brand": item["brand"],
-            "Color": item["feature"]["Color"],
-            "Banana": item["bananaPrice"],
-            "Ihavecpu": "0",
-            "PictureLink": item["img_url"],
-            "Detail": item["description"],
-            "RegularName": (regularName.strip()).upper()
-        }
+        if item["feature"]["Color"]:
+            dataDict = {
+                "Name": item["name"].strip(),
+                "Brand": item["brand"],
+                "Color": item["feature"]["Color"],
+                "Banana": item["bananaPrice"],
+                "Ihavecpu": "0",
+                "PictureLink": item["img_url"],
+                "Detail": item["description"],
+                "RegularName": (regularName.strip()).upper()
+            }
+        else:
+            dataDict = {
+                "Name": item["name"].strip(),
+                "Brand": item["brand"],
+                "Color": "None",
+                "Banana": item["bananaPrice"],
+                "Ihavecpu": "0",
+                "PictureLink": item["img_url"],
+                "Detail": item["description"],
+                "RegularName": (regularName.strip()).upper()
+            }
+
         bananaHeadGear.append(dataDict)
 
     return bananaHeadGear
@@ -493,7 +505,7 @@ def addHeadGearIHaveCpu():
                 nameTemp = nameTemp.replace("  ", " ")
             nameTemp = nameTemp.replace("G PRO", "GPRO")
 
-            regularTemp = (item["brand"] + " " + nameTemp).strip()
+            regularTemp = nameTemp.strip()
             dataDict = {
                 "Name": (item["name"]),
                 "Brand": item["brand"],
@@ -511,9 +523,9 @@ def addHeadGearIHaveCpu():
 # mouseIHav = addMouseFromIHav()
 # mouseBanana = addMouseFromBanana()
 kbIHav = addKBFromIHaveCpu()
-kbBanana = addKBFromBanana()
-hgIhav = addHeadGearIHaveCpu()
-hgBanana = addHeadGearBanana()
+# kbBanana = addKBFromBanana()
+# hgIhav = addHeadGearIHaveCpu()
+# hgBanana = addHeadGearBanana()
 
 # for i in mouseBanana:
 #     i = json.dumps(i)
@@ -525,26 +537,26 @@ hgBanana = addHeadGearBanana()
 #     req = requests.post("https://theorybackend.herokuapp.com/AddMouse", i)
 #     print(req)
 # print("Complete Mouse Ihave")
-for i in kbBanana:
-    i = json.dumps(i)
-    req = requests.post("https://theorybackend.herokuapp.com/AddKeyBoard", i)
-    print(req)
-print("Complete KB Banana")
+# for i in kbBanana:
+#     i = json.dumps(i)
+#     req = requests.post("https://theorybackend.herokuapp.com/AddKeyBoard", i)
+#     print(req)
+# print("Complete KB Banana")
 for i in kbIHav:
     i = json.dumps(i)
     req = requests.post("https://theorybackend.herokuapp.com/AddKeyBoard", i)
     print(req)
 print("Complete KB Ihave")
-for i in hgBanana:
-    i = json.dumps(i)
-    req = requests.post("https://theorybackend.herokuapp.com/AddHeadGear", i)
-    print(req)
-print("Complete HG Banana")
-for i in hgIhav:
-    i = json.dumps(i)
-    req = requests.post("https://theorybackend.herokuapp.com/AddHeadGear", i)
-    print(req)
-print("Complete HG Ihave")
+# for i in hgBanana:
+#     i = json.dumps(i)
+#     req = requests.post("https://theorybackend.herokuapp.com/AddHeadGear", i)
+#     print(req)
+# print("Complete HG Banana")
+# for i in hgIhav:
+#     i = json.dumps(i)
+#     req = requests.post("https://theorybackend.herokuapp.com/AddHeadGear", i)
+#     print(req)
+# print("Complete HG Ihave")
 
 
     

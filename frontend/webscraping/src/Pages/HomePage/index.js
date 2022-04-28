@@ -178,7 +178,7 @@ const HomePage = () => {
                                 return <ProductCard product={product} key={index} />;
                             })}
                         {!loading && searchInput && allSearchProduct.length === 0 && <p>Not Found...</p>}
-                        {!loading && filteredProduct.length === 0 && <p>Not Found...</p>}
+                        {!loading && filteredProduct.length === 0}
                         {!loading &&
                             allSearchProduct.length > 0 &&
                             filteredProduct.length === 0 &&
