@@ -24,14 +24,17 @@ const NavigationBar = () => {
 
     return (
         <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-800">
-            <div className="container flex flex-wrap justify-between items-center mx-auto">
-                <a href="/" className="flex items-center">
+            <div className="container flex flex-wrap xl:justify-between items-center mx-auto">
+                <a href="/" className="flex items-center mr-5">
+                    <img className="self-center text-xl font-semibold whitespace-nowrap dark:text-white h-5 w-10 object-contain" src='https://logodix.com/logo/264097.png'></img>
+                </a>
+                <a href="/" className="flex items-center mr-5">
                     <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">HOME</span>
                 </a>
                 <a href="https://github.com/pperorin/Project-Theory-Com" className="flex items-center">
                     <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">GITHUB</span>
                 </a>
-                <div className="Bars">
+                <div className="Bars ">
                     <ul className="nav-items">
                         {navItems.map((item) => {
                             if (item.title === 'Home') {
@@ -55,7 +58,7 @@ const NavigationBar = () => {
                         })}
                     </ul>
                 </div>
-                <div className="flex md:order-2">
+                <div className="flex  md:order-2">
                     <div className="hidden relative mr-3 md:mr-0 md:block">
                         <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                             <svg

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-
+import "../ProductCard/index.css"
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const handleClick = () => {
@@ -28,9 +28,9 @@ const ProductCard = ({ product }) => {
                             alt="Sunset in the mountains"
                         />
                     </div>
-                    <div className="px-6">
-                        <div className="text-xl mb-10">{product.RegularName}</div>
-                        <p className="text-gray-700 text-xl font-bold">{cost + ' บาท'}</p>
+                    <div className="px-6" >
+                        <div className="text-xl mb-10 " id='topic1'>{product.RegularName}</div>
+                        <p className="text-gray-700 text-xl font-bold"id='topic1' >{cost + ' บาท'}</p>
                     </div>
                     <div className="px-6 pt-4 pb-2">
                         <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
